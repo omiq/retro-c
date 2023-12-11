@@ -23,3 +23,4 @@ hello.build/static_src/CompiledFunctionType.c
 hello.build/static_src/CompiledFunctionType.o
 hello.build/static_src/MainProgram.c
 hello.build/static_src/MainProgram.o
+hello.o
