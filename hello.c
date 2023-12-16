@@ -279,6 +279,10 @@ void game_loop() {
             score+=50;
             break;
         
+        case 154: // Cash money
+            score+=150;
+            break;
+
         case 38: // Gobbo
             health-=25;
             break;
@@ -307,7 +311,9 @@ void game_loop() {
             if(c!=32) {
                 gotoxy(0,0);
                 printf("%03d",c);
+                obstruction=true;
             }
+            
             break;
     }
 
