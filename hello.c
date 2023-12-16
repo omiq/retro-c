@@ -17,7 +17,7 @@ unsigned char buffer [sizeof(int)*8+1];
 
 // Player 
 unsigned char keys=0;
-unsigned char health=100;
+int health=100;
 unsigned int score=0;
 
 
@@ -64,6 +64,12 @@ unsigned int map(char level, char x, char y) {
     // return 40*y+x;
 }
 
+void set_map(char level, char x, char y, int tile) {
+    
+    // Set the part of the array to the given tile
+    game_map[40*y+x]=tile;
+    
+}
 
 void draw_screen() {
 
@@ -94,14 +100,12 @@ void petscii() {
 void draw_move(bool replace) {
 
     // Delete the player character
-    if(replace) {
-        cputcxy(old_x,old_y,map(level,old_x,old_y));
-    } else {
-        game_map[old_x,old_y]=32;
-        cputcxy(old_x,old_y,32);
+    if(!replace) {
+        set_map(level, old_x, old_y, 32);
     }
 
     // Draw new location
+    cputcxy(old_x,old_y,map(level,old_x,old_y));
     cputcxy(x,y,64); 
     
 }
@@ -186,11 +190,29 @@ int main() {
                 }else{
 
                     // Not enough keys to unlock!
+                    set_map(level, x, y, 28); // turn into partially open
+                    health-=10; // lose 10 health
                     obstruction=true;
                 }
                 break;
+
+            case 28: // Partially open door
+                // Not enough keys to unlock!
+                set_map(level, x, y, 32); // turn into fully open
+                health-=10; // lose 10 health
+                obstruction=true;
+                break;
+
             case 36: // Cash money
                 score+=50;
+                break;
+            
+            case 38: // Gobbo
+                health-=25;
+                break;
+
+            case 147: // Health
+                health+=25;
                 break;
 
             case 158: // Rats
@@ -218,7 +240,7 @@ int main() {
 
         if(health<1) {
             clrscr();
-            printf("Ah, such a shame, you were doing so well!\n\nSCORE:%03d",score);
+            printf("ah, such a shame, you were doing so well!\n\nscore:%03d\n\n",score);
             key=cgetc();
             in_play=false;
         }
