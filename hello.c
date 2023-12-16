@@ -5,14 +5,14 @@
 #include <stdlib.h>
 
 // Global key variable
-int key,i;
-char x=19;
-char y=10;
-char old_x, old_y;
-char level=0;
-char buffer [sizeof(int)*8+1];
+unsigned int key,i;
+unsigned char x=19;
+unsigned char y=10;
+unsigned char old_x, old_y;
+unsigned char level=0;
+unsigned char buffer [sizeof(int)*8+1];
 
-char game_map[] = {
+unsigned char game_map[] = {
  32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,102,102,102,102,102,102,102,102,102,102, 32, 32, 32, 32, 32, 32, 32,
  32, 32, 32, 32, 32,102,102,102,102,102,102,102,102,102,102,102,102,102,102,102,102,102,102,102, 32, 32, 32, 32, 32, 32, 32, 32,102, 32, 32, 32, 32, 32, 32, 32,
  32, 32, 32, 32, 32,102, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,102, 32, 32, 32, 32, 32, 32, 32,
@@ -42,10 +42,16 @@ char game_map[] = {
 
 };
 
-int map(char level, char x, char y) {
+unsigned int map(char level, char x, char y) {
     
+    unsigned char c;
+
+    c = game_map[40*y+x];
+    if(c!=32) c+=64;
     // Right now just one map
-    return game_map[40*y+x];
+    return c;
+    
+    // For testing you could use the following to output the charset
     // return 40*y+x;
 }
 
@@ -62,24 +68,42 @@ void draw_screen() {
 
 }
 
+
+void petscii() {
+
+    key=cgetc();
+    i=0;
+    for(x=0;x<40;x+=5) {
+    for(y=0;y<20;y++) {
+        gotoxy(x,y);
+    	printf("%d",i);
+        cputcxy(x+3,y,i+64);
+        i++;
+    }}
+}
+
 int main() {
     /* Clear Screen */
     clrscr();
+
+    // Uppercase/Graphical characterset = 12
     POKE(59468,12);
+
+// Character 102 at screen 0,0 
+//    POKE(32768,102);
+
     draw_screen();
+    gotoxy(0,0);
+    printf("map 1");
+    key=cgetc();
 
     /* Hide cursor */
     cursor(0);
-    printf("map 1");
     cputcxy(x,y,'@');
 
     /* Loop until Q is pressed */
     while ((key  = cgetc()) != 'Q')
     {
-
-
-        // Delete the character
-        cputcxy(x,y,map(level,x,y));
 
         // Backup the location
         old_x = x;
@@ -104,9 +128,18 @@ int main() {
                 break; 
         }
 
+        if(map(level,x,y)==32) {
 
-        // Draw new location
-        cputcxy(x,y,64);
+            // Delete the character
+            cputcxy(old_x,old_y,map(level,old_x,old_y));
+    
+            // Draw new location
+            cputcxy(x,y,64);
+        } 
+        else {
+            x=old_x;
+            y=old_y;
+        }
      
     }
     cursor(1);
