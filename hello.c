@@ -18,7 +18,7 @@ unsigned char buffer [sizeof(int)*8+1];
 // Player 
 unsigned char keys=0;
 unsigned char health=100;
-unsigned char score=0;
+unsigned int score=0;
 
 
 
@@ -188,6 +188,7 @@ int main() {
                     // Not enough keys to unlock!
                     obstruction=true;
                 }
+                break;
             case 36: // Cash money
                 score+=50;
                 break;
@@ -215,7 +216,12 @@ int main() {
             draw_move(false);
         }
 
-    
+        if(health<1) {
+            clrscr();
+            printf("Ah, such a shame, you were doing so well!\n\nSCORE:%03d",score);
+            key=cgetc();
+            in_play=false;
+        }
      
     }
     clrscr();
