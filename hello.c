@@ -207,7 +207,7 @@ bool game_over() {
 void game_loop() {
 
     gotoxy(0,24);
-    printf("map %02d keys %02d health %03d score %03d", room, keys, health, score);
+    printf(" keys %02d health %03d score %03d", keys, health, score);
 
     // Backup the location
     old_x = x;
