@@ -208,7 +208,7 @@ bool game_over() {
 void game_loop() {
 
     gotoxy(0,24);
-    printf(" keys %02d health %03d score %03d", keys, health, score);
+    printf(" keys %02d health %03d magic %03d score %03d", keys, health, magic, score);
 
     // Backup the location
     old_x = x;
@@ -282,7 +282,7 @@ void game_loop() {
 
         case 145: // Potion
             score+=150;
-            potion+=1;
+            magic+=100;
             break;
 
         case 154: // Cash money
