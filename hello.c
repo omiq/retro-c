@@ -17,8 +17,9 @@ unsigned char room=0;
 unsigned char buffer [sizeof(int)*8+1];
 
 // Player 
-unsigned char keys,idols=0;
+unsigned char keys,idols,potion=0;
 int health=100;
+int magic=0;
 unsigned int score=0;
 
 unsigned char rooms[] = {
@@ -278,7 +279,12 @@ void game_loop() {
         case 36: // Cash money
             score+=50;
             break;
-        
+
+        case 145: // Potion
+            score+=150;
+            potion+=1;
+            break;
+
         case 154: // Cash money
             score+=150;
             break;
@@ -353,6 +359,8 @@ int main() {
     score=0;
     keys=0;
     room=0;
+    potion=0;
+    magic=0;
 
     // Should the program end?
     while(run){

@@ -32,7 +32,7 @@ Empathic Qubit, Roberto Muscedere, June Tate-Gans, Pablo Roldan.
 This is free software with ABSOLUTELY NO WARRANTY.
 See the "About VICE" command for more info.
  
-random seed was: 0x657e064d
+random seed was: 0x657e0740
 command line was: xpet hellopet.prg
 Loading system file `/usr/share/vice/PET/characters-2.901447-10.bin'.
 Loading system file `/usr/share/vice/PET/basic-4.901465-23-20-21.bin'.
@@ -104,20 +104,21 @@ PET: cycles per frame set to 20042, refresh to 49.895Hz
 Sync reset
 PET: cycles per frame set to 20050, refresh to 49.875Hz
 Sync reset
-AUTOSTART: Injecting program data at $0401 (size $20c1)
+AUTOSTART: Injecting program data at $0401 (size $20e3)
 AUTOSTART: Ready
 AUTOSTART: Starting program.
 AUTOSTART: Restoring FileSystemDevice8 to 1.
 AUTOSTART: Restoring FSDevice8ConvertP00 to 1.
 AUTOSTART: Restoring FSDeviceLongNames to 0.
 AUTOSTART: Done.
-PET: cycles per frame set to 19949, refresh to 50.127Hz
+PET: cycles per frame set to 18300, refresh to 54.644Hz
+Sync reset
+PET: cycles per frame set to 20049, refresh to 49.877Hz
 Sync reset
 PET: cycles per frame set to 20050, refresh to 49.875Hz
 Sync reset
 Initiating render thread 0 shutdown
 Joining render thread 0 ...
-Render thread shutdown
 Joined render thread 0.
 
 Resources with non default values:
