@@ -3,9 +3,11 @@
 #include <cbm.h>
 #include <peekpoke.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 // Global key variable
-unsigned int key,i;
+bool in_play = false;
+unsigned int key,i,c;
 unsigned char x=19;
 unsigned char y=10;
 unsigned char old_x, old_y;
@@ -95,14 +97,17 @@ int main() {
     draw_screen();
     gotoxy(0,0);
     printf("map 1");
-    key=cgetc();
+    // wait for keypress? key=cgetc();
 
     /* Hide cursor */
     cursor(0);
     cputcxy(x,y,'@');
 
+    // Game on!
+    in_play = true;
+
     /* Loop until Q is pressed */
-    while ((key  = cgetc()) != 'Q')
+    while (in_play)
     {
 
         // Backup the location
@@ -110,7 +115,7 @@ int main() {
         old_y = y;
 
         // keys;
-        switch (key) 
+        switch (key=cgetc()) 
         { 
             case 'w':
                 if(y>0) y--; 
@@ -124,11 +129,16 @@ int main() {
             case 'd': 
                 if(x<39) x++; 
                 break; 
+            case 'Q':
+                in_play = false;
+                break;
             default: 
                 break; 
         }
 
-        if(map(level,x,y)==32) {
+        // Anything in our path?
+        c=map(level,x,y);
+        if(c==32) {
 
             // Delete the character
             cputcxy(old_x,old_y,map(level,old_x,old_y));
@@ -137,11 +147,18 @@ int main() {
             cputcxy(x,y,64);
         } 
         else {
+
+            itoa(c,buffer,10);
+            cputsxy(0,0,buffer);
+
+            // Collision
             x=old_x;
             y=old_y;
         }
      
     }
+    clrscr();
+    printf("goodbye!\n\n");
     cursor(1);
     return(0);
 }
