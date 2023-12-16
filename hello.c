@@ -148,12 +148,21 @@ int main() {
         } 
         else {
 
-            itoa(c,buffer,10);
-            cputsxy(0,0,buffer);
-
             // Collision
-            x=old_x;
-            y=old_y;
+            switch (c)
+            {
+                case 166:
+                    // Wall               
+                    x=old_x;
+                    y=old_y;
+                    break;
+                
+                default:
+                    itoa(c,buffer,10);
+                    cputsxy(0,0,buffer);
+                    break;
+            }
+
         }
      
     }
