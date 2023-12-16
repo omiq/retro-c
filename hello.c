@@ -45,8 +45,8 @@ char game_map[] = {
 int map(char level, char x, char y) {
     
     // Right now just one map
-    // return game_map[40*y+x];
-    return 40*y+x;
+    return game_map[40*y+x];
+    // return 40*y+x;
 }
 
 
@@ -66,15 +66,7 @@ int main() {
     /* Clear Screen */
     clrscr();
     POKE(59468,12);
-    //draw_screen();
-
-    for(x=0;x<40;y+=4) {
-    for(y=0;y<20;y++) {
-        itoa (i,buffer,DECIMAL);
-        cputsxy(x,y,buffer);
-        cputcxy(x+2,y,i);
-        i++;
-    }}
+    draw_screen();
 
     /* Hide cursor */
     cursor(0);
