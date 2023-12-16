@@ -188,10 +188,22 @@ int main() {
                     // Not enough keys to unlock!
                     obstruction=true;
                 }
+            case 36: // Cash money
+                score+=50;
+                break;
+
+            case 158: // Rats
+                health-=5;
+                break;
+
+            case 152: // Idol
+                score+=100;
+                break;
             
             default:
-                itoa(c,buffer,10);
-                cputsxy(0,0,buffer);
+//                itoa(c,buffer,10);
+                gotoxy(0,0);
+                printf("%03d",c);
                 break;
         }
 
