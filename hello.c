@@ -4,11 +4,13 @@
 #include <peekpoke.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <unistd.h>
 
 // Global key variable
 bool run=true;
 bool in_play=false;
 bool obstruction=false;
+unsigned int timer;
 unsigned int key,i,c;
 unsigned char x=19;
 unsigned char y=8;
@@ -173,6 +175,30 @@ void petscii() {
     }}
 }
 
+
+unsigned int dumb_wait(unsigned int delay) {
+    for(timer=0; timer<delay; timer++) {}
+    return timer;
+}
+
+
+void draw_momentary_object(obj_old_x, obj_old_y, obj_x, obj_y, obj_tile) {
+
+    // Replace tile
+    cputcxy(obj_old_x,obj_old_y,map(obj_old_x,obj_old_y));
+
+    // Draw tile in new location
+    cputcxy(obj_x,obj_y,obj_tile); 
+
+    // Delay
+    timer=dumb_wait(2000);
+
+    // Replace tile again
+    cputcxy(obj_x,obj_y,map(obj_x,obj_y));
+    
+}
+
+
 void draw_move(bool replace) {
 
     // Delete the player character
@@ -223,11 +249,17 @@ void game_loop() {
         case 'a': 
             if(x>0) x--; 
             break; 
+        case 'A': 
+            draw_momentary_object(x-1,y,x-1,y,131); 
+            break;     
         case 's': 
             if(y<24) y++; 
             break; 
         case 'd': 
             if(x<39) x++; 
+            break; 
+        case 'D': 
+            draw_momentary_object(x+1,y,x+1,y,31); 
             break; 
         case 'Q':
             in_play = false;
