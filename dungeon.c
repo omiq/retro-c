@@ -1,12 +1,13 @@
-// PET cl65 -t pet -v dungeon.c -o dungeon.prg && xpet dungeon.prg > /dev/null
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <unistd.h>
 #include <conio.h>
-#include <cbm.h>
-#include <peekpoke.h>
 
+#ifdef __CBM__
+    #include <cbm.h>
+    #include <peekpoke.h>
+#endif
 
 // Global key variable
 bool run=true;
@@ -377,8 +378,10 @@ int main() {
     /* Clear Screen */
     clrscr();
 
+#ifdef __PET__
     // Uppercase/Graphical characterset = 12
     POKE(59468,12);
+#endif
 
     /* Hide cursor */
     cursor(0);
