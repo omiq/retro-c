@@ -383,6 +383,10 @@ int main() {
     POKE(59468,12);
 #endif
 
+#ifdef __C64__
+    POKE(53272,21);
+#endif
+
     /* Hide cursor */
     cursor(0);
 
