@@ -1,4 +1,5 @@
 // PET cl65 -t pet -v dungeon.c -o dungeon.prg && xpet dungeon.prg > /dev/null
+// C64 cl65 -t c64 -v dungeon.c -o dungeon64.prg && x64sc dungeon64.prg > /dev/null
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
