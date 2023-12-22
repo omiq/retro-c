@@ -418,7 +418,16 @@ void title_screen() {
 
     gotoxy(0,9);
     printf("    a game by retrogamecoders.com\n             press a key");
-    key=cgetc();
+
+    while(kbhit()==false){
+      timer=dumb_wait(1500);
+      gotoxy(13,10);  
+      printf("%cpress a key",18);  
+      timer=dumb_wait(1500);
+      gotoxy(13,10);  
+      printf("%cpress a key",146);    
+    };
+    
     in_play=true;
 }
 
