@@ -1,3 +1,10 @@
+/*
+
+ cl65 -t c64 -v -o dungeon64.prg dungeon.c && x64sc dungeon64.prg > /dev/null
+ cl65 -t c64 -v -o dungeon64.prg dungeon.c && x64sc dungeon64.prg > /dev/null
+
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -13,11 +20,11 @@
 bool run=true;
 bool in_play=false;
 bool obstruction=false;
-unsigned int timer;
+unsigned int timer,delay;
 unsigned int key,i,c;
 unsigned char x=19;
 unsigned char y=8;
-unsigned char old_x, old_y;
+unsigned char old_x, old_y, direction_x, direction_y, fx, fy;
 unsigned char room=0;
 unsigned char buffer [sizeof(int)*8+1];
 
@@ -185,7 +192,7 @@ unsigned int dumb_wait(unsigned int delay) {
 }
 
 
-void draw_momentary_object(obj_old_x, obj_old_y, obj_x, obj_y, obj_tile) {
+void draw_momentary_object(obj_old_x, obj_old_y, obj_x, obj_y, obj_tile, delay) {
 
     // Replace tile
     cputcxy(obj_old_x,obj_old_y,map(obj_old_x,obj_old_y));
@@ -194,7 +201,7 @@ void draw_momentary_object(obj_old_x, obj_old_y, obj_x, obj_y, obj_tile) {
     cputcxy(obj_x,obj_y,obj_tile); 
 
     // Delay
-    timer=dumb_wait(2000);
+    timer=dumb_wait(delay);
 
     // Replace tile again
     cputcxy(obj_x,obj_y,map(obj_x,obj_y));
@@ -239,6 +246,12 @@ void game_loop() {
     gotoxy(0,24);
     printf(" keys %02d health %03d magic %03d score %03d", keys, health, magic, score);
 
+    // Change direction
+    if(x != old_x || y != old_y) {
+        direction_x = x-old_x;
+        direction_y = y-old_y;
+    }
+
     // Backup the location
     old_x = x;
     old_y = y;
@@ -253,7 +266,7 @@ void game_loop() {
             if(x>0) x--; 
             break; 
         case 'A': 
-            draw_momentary_object(x-1,y,x-1,y,131); 
+            draw_momentary_object(x-1,y,x-1,y,131,2000); 
             break;     
         case 's': 
             if(y<24) y++; 
@@ -262,8 +275,28 @@ void game_loop() {
             if(x<39) x++; 
             break; 
         case 'D': 
-            draw_momentary_object(x+1,y,x+1,y,31); 
+            draw_momentary_object(x+1,y,x+1,y,31,2000); 
             break; 
+        case 'f': 
+
+            if(magic > 5) {
+
+                magic-=5;
+                fx = x;
+                fy = y;  
+
+                while(map(fx,fy)==32 && magic > 0) {
+                    fx = fx+direction_x;
+                    fy = fy+direction_y;                
+                    draw_momentary_object(fx,fy,fx,fy,'*',200); 
+                    magic-=1;
+                }
+
+
+
+              }
+
+            break;            
         case 'Q':
             in_play = false;
             break;
@@ -348,7 +381,9 @@ void game_loop() {
             break;
         
         default:
-//          itoa(c,buffer,10);
+            
+            // convert integer to ascii: itoa(c,buffer,10);
+            
             if(c!=32) {
                 gotoxy(0,0);
                 printf("%03d",c);
@@ -393,19 +428,24 @@ int main() {
     // Titles
     title_screen();
 
-    // Initialize
+    // Start running     
     run=true;
-    keys=0;
-    health=100;
-    score=0;
-    keys=0;
-    room=0;
-    potion=0;
-    magic=0;
-
+        
     // Should the program end?
     while(run){
 
+        // Initialize if not already running a game
+        if (in_play != true) {
+            keys=0;
+            health=100;
+            score=0;
+            keys=0;
+            room=0;
+            potion=0;
+            magic=0;
+        }
+
+        // Set up the screen
         load_room();
         draw_screen();
         cputcxy(x,y,'@');
