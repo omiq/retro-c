@@ -190,8 +190,8 @@ void load_room() {
             enemies[enemy_count].y = pos/40;
             enemies[enemy_count].old_x = enemies[enemy_count].x;
             enemies[enemy_count].old_y = enemies[enemy_count].y;
-            enemies[enemy_count].health = 100;
-            enemies[enemy_count].strength = 10;
+            enemies[enemy_count].health = 30;
+            enemies[enemy_count].strength = 5;
             enemies[enemy_count].speed = 1;
             enemies[enemy_count].armour = 10;
 
@@ -210,8 +210,8 @@ void load_room() {
             enemies[enemy_count].y = pos/40;
             enemies[enemy_count].old_x = enemies[enemy_count].x;
             enemies[enemy_count].old_y = enemies[enemy_count].y;
-            enemies[enemy_count].health = 10;
-            enemies[enemy_count].strength = 5;
+            enemies[enemy_count].health = 15;
+            enemies[enemy_count].strength = 1;
             enemies[enemy_count].speed = 2;
             enemies[enemy_count].armour = 0;
 
@@ -240,6 +240,8 @@ void set_map(char x, char y, int tile) {
 
 // Returns the enemy for a given x,y coord
 unsigned int which_enemy(ex,ey) {
+
+    if(map(ex,ey)==32) return 0;
 
     // Enemies starts at 1, 0 = no enemy
     for(i=1;i<enemy_count+1;i++)
@@ -345,21 +347,33 @@ void attack(weapon, ax, ay)
 
     rnum = (rand() % (20 - 1 + 1)) + 1; 
     gotoxy(0,0);
-    if(rnum > enemies[this_enemy].armour) {
+    if(rnum > enemies[this_enemy].armour+enemies[this_enemy].speed) {
 
         // Damage!
-        enemies[this_enemy].health-=weapon;
-        printf("hit!! enemy health: %3d", enemies[this_enemy].health);
+        if(enemies[this_enemy].health<weapon) 
+        {
+            enemies[this_enemy].health = 0;
+        }
+        else
+        {
+            enemies[this_enemy].health-=weapon;
+            printf("hit!! enemy health: %3d", enemies[this_enemy].health);
+        }
+       
         
     } else {
         printf("miss! enemy health: %3d", enemies[this_enemy].health);
+        if((x == ax && y == ay)||(x == ax && (y == ay + 1 || y == ay - 1)) || (y == ay && (x == ax + 1 || x == ax - 1))) 
+        {
+            health -= enemies[this_enemy].strength;
+        }
     }
 
-    if(enemies[this_enemy].health<=0) {
+    if(enemies[this_enemy].health==0) {
 
         // Success!
         gotoxy(0,0);
-        printf("enemy defeated!");
+        printf("enemy defeated!                      ");
 
         // Draw tile in new location
         cputcxy(ax,ay,32); 
@@ -389,9 +403,6 @@ void game_loop() {
     // keys;
     switch (key=cgetc()) 
     { 
-
-        gotoxy(0,0);
-        printf("                                         ");
 
         case 'w':
             if(y>0) y--; 
@@ -476,10 +487,19 @@ void game_loop() {
             break;
 
         case 28: // Partially open door
-            // Not enough keys to unlock!
-            set_map(x, y, 32); // turn into fully open
-            health-=10; // lose 10 health
-            obstruction=true;
+
+            if(keys>0)
+            {
+                keys-=1;
+                score+=10;
+                obstruction=false;
+
+            }else{
+                // Not enough keys to unlock!
+                set_map(x, y, 32);  // turn into fully open
+                health-=10;         // lose 10 health
+                obstruction=true;
+            }
             break;
 
         case 36: // Cash money
@@ -495,17 +515,24 @@ void game_loop() {
             score+=150;
             break;
 
-        case 38: // Gobbo
-            health-=25;
-            break;
-
         case 147: // Health
             health+=25;
             break;
 
-        case 158: // Rats
-            health-=5;
+
+/* Enemies >> */
+
+        case 38: // Gobbo
+            attack(5,x,y);
+            obstruction=true;
             break;
+
+        case 158: // Rats
+            attack(5,x,y);
+            obstruction=true;
+            break;
+            
+/* ^^ Enemies */
 
         case 152: // Idol
             score+=100;
