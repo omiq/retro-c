@@ -48,6 +48,7 @@ struct enemy {
     unsigned char speed;
     unsigned char armour;
 };
+unsigned int this_enemy = 0;
 
 struct enemy enemies[1000];
 
@@ -161,6 +162,7 @@ void load_room() {
     printf("loading room %d",room+1);
 
     for (pos = 0; pos < 1000; pos++) {   
+
         c=rooms[pos+(1000*room)];
 
         // Player x and y
@@ -171,6 +173,9 @@ void load_room() {
 
         // Goblin
         if(c==38) {
+
+            // Increment for next enemy (Enemy 0 is counted as no enemy)
+            enemy_count+=1;
 
             // Create the enemy in the list
             enemies[enemy_count].tile = c;
@@ -184,12 +189,40 @@ void load_room() {
             enemies[enemy_count].speed = 1;
             enemies[enemy_count].armour = 10;
 
-            // Increment for next enemy
-            enemy_count+=1;
         }  
+
+        // Rat
+        else if (c==94) {
+
+            // Increment for next enemy (Enemy 0 is counted as no enemy)
+            enemy_count+=1;
+
+            // Create the enemy in the list
+            enemies[enemy_count].tile = 158;
+            enemies[enemy_count].room = room;
+            enemies[enemy_count].x = pos % 40;
+            enemies[enemy_count].y = pos/40;
+            enemies[enemy_count].old_x = enemies[enemy_count].x;
+            enemies[enemy_count].old_y = enemies[enemy_count].y;
+            enemies[enemy_count].health = 10;
+            enemies[enemy_count].strength = 5;
+            enemies[enemy_count].speed = 2;
+            enemies[enemy_count].armour = 0;
+
+        }  
+
         game_map[pos] = c;     
     }
-    //printf("..done!");      
+    
+    /*
+    printf("\n\nenemies %3d\n", enemy_count);
+    for(i=1; i<enemy_count+1;i++)
+    {
+        printf("%s %3d\n",enemies[i].tile,i);
+    }
+
+    key = cgetc();      
+    */
 }
 
 void set_map(char x, char y, int tile) {
@@ -197,6 +230,20 @@ void set_map(char x, char y, int tile) {
     // Set the part of the array to the given tile
     game_map[40*y+x]=tile;
     
+}
+
+// Returns the enemy for a given x,y coord
+unsigned int which_enemy(ex,ey) {
+
+    // Enemies starts at 1, 0 = no enemy
+    for(i=1;i<enemy_count+1;i++)
+    {
+        if(enemies[i].x == ex && enemies[i].y == ey) return i;
+    }
+
+    // No enemies
+    return 0;
+
 }
 
 void draw_screen() {
@@ -322,30 +369,28 @@ void game_loop() {
             if(magic > 5) {
 
                 magic-=5;
-                fx = x;
-                fy = y;  
+                fx = x+direction_x;
+                fy = y+direction_y;  
 
                 c=map(fx,fy);
-                while(c==32 && magic > 0) {
-                    fx = fx+direction_x;
-                    fy = fy+direction_y;                
+                while(c==32 && magic > 0) {             
                     draw_momentary_object(fx,fy,fx,fy,'*',200); 
                     magic-=1;
+                    fx = fx+direction_x;
+                    fy = fy+direction_y;  
                     c=map(fx,fy);
                 }
 
-                //gotoxy(0,0);
-                //printf("hit %3d",c);
-                //key=cgetc();
-                if(c==38) {
+                this_enemy = 0;
+                this_enemy = which_enemy(fx,fy);
+                if(this_enemy > 0) {
                     gotoxy(0,0);
-                    printf("hit a gobbo!");
-                }
-
-                if(c==158) {
+                    printf("hit! %s %3d", c, this_enemy);
+                } else {
                     gotoxy(0,0);
-                    printf("hit a rat!");
+                    printf("hit but %s",c);
                 }
+                this_enemy = 0;
 
 
               }
@@ -497,6 +542,7 @@ int main() {
             room=0;
             potion=0;
             magic=0;
+            enemy_count=0;
         }
 
         // Set up the screen
