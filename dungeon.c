@@ -334,11 +334,17 @@ void game_loop() {
                     c=map(fx,fy);
                 }
 
-                gotoxy(100,100);
-                printf("HIT %d",c);
+                //gotoxy(0,0);
+                //printf("hit %3d",c);
+                //key=cgetc();
                 if(c==38) {
-                    gotoxy(100,100);
+                    gotoxy(0,0);
                     printf("hit a gobbo!");
+                }
+
+                if(c==158) {
+                    gotoxy(0,0);
+                    printf("hit a rat!");
                 }
 
 
