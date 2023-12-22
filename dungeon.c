@@ -622,6 +622,7 @@ int main() {
             potion=0;
             magic=0;
             enemy_count=0;
+            sword=false;
         }
 
         // Set up the screen
