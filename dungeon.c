@@ -34,6 +34,25 @@ int health=100;
 int magic=0;
 unsigned int score=0;
 
+// Enemy
+unsigned int enemy_count=0;
+struct enemy {
+    unsigned char tile;
+    unsigned char room;
+    unsigned char x;
+    unsigned char y;
+    unsigned char old_x;
+    unsigned char old_y;
+    unsigned char health;
+    unsigned char strength;
+    unsigned char speed;
+    unsigned char armour;
+};
+
+struct enemy enemies[1000];
+
+
+
 unsigned char rooms[] = {
 // Room 1
  32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
@@ -143,9 +162,30 @@ void load_room() {
 
     for (pos = 0; pos < 1000; pos++) {   
         c=rooms[pos+(1000*room)];
+
+        // Player x and y
         if(c==0) {
             y=pos/40;
             x=pos % 40;
+        }
+
+        // Goblin
+        if(c==38) {
+
+            // Create the enemy in the list
+            enemies[enemy_count].tile = c;
+            enemies[enemy_count].room = room;
+            enemies[enemy_count].x = pos % 40;
+            enemies[enemy_count].y = pos/40;
+            enemies[enemy_count].old_x = enemies[enemy_count].x;
+            enemies[enemy_count].old_y = enemies[enemy_count].y;
+            enemies[enemy_count].health = 100;
+            enemies[enemy_count].strength = 10;
+            enemies[enemy_count].speed = 1;
+            enemies[enemy_count].armour = 10;
+
+            // Increment for next enemy
+            enemy_count+=1;
         }  
         game_map[pos] = c;     
     }
@@ -285,13 +325,21 @@ void game_loop() {
                 fx = x;
                 fy = y;  
 
-                while(map(fx,fy)==32 && magic > 0) {
+                c=map(fx,fy);
+                while(c==32 && magic > 0) {
                     fx = fx+direction_x;
                     fy = fy+direction_y;                
                     draw_momentary_object(fx,fy,fx,fy,'*',200); 
                     magic-=1;
+                    c=map(fx,fy);
                 }
 
+                gotoxy(100,100);
+                printf("HIT %d",c);
+                if(c==38) {
+                    gotoxy(100,100);
+                    printf("hit a gobbo!");
+                }
 
 
               }
