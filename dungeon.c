@@ -7,13 +7,19 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <stdbool.h>
 #include <unistd.h>
+
+
+#if defined (__CC65__)
+#include<cc65.h>
 #include <conio.h>
 
-#ifdef __CBM__
+#if defined __CBM__
     #include <cbm.h>
     #include <peekpoke.h>
+#endif
 #endif
 
 // Global key variable
@@ -328,6 +334,43 @@ bool game_over() {
     }
 }
 
+void attack(weapon, ax, ay)
+{
+    int rnum = 0;
+    this_enemy = 0;
+    this_enemy = which_enemy(ax,ay);
+    if(this_enemy == 0) {
+        return;
+    } 
+
+    rnum = (rand() % (20 - 1 + 1)) + 1; 
+    gotoxy(0,0);
+    if(rnum > enemies[this_enemy].armour) {
+
+        // Damage!
+        enemies[this_enemy].health-=weapon;
+        printf("hit!! enemy health: %3d", enemies[this_enemy].health);
+        
+    } else {
+        printf("miss! enemy health: %3d", enemies[this_enemy].health);
+    }
+
+    if(enemies[this_enemy].health<=0) {
+
+        // Success!
+        gotoxy(0,0);
+        printf("enemy defeated!");
+
+        // Draw tile in new location
+        cputcxy(ax,ay,32); 
+        set_map(ax,ay,32);
+
+        // Up the score
+        score+=10;
+    }
+
+}
+
 void game_loop() {
 
     gotoxy(0,24);
@@ -346,6 +389,10 @@ void game_loop() {
     // keys;
     switch (key=cgetc()) 
     { 
+
+        gotoxy(0,0);
+        printf("                                         ");
+
         case 'w':
             if(y>0) y--; 
             break; 
@@ -354,6 +401,7 @@ void game_loop() {
             break; 
         case 'A': 
             draw_momentary_object(x-1,y,x-1,y,131,2000); 
+            attack(10,x-1,y);
             break;     
         case 's': 
             if(y<24) y++; 
@@ -363,6 +411,7 @@ void game_loop() {
             break; 
         case 'D': 
             draw_momentary_object(x+1,y,x+1,y,31,2000); 
+            attack(10,x+1,y);
             break; 
         case 'f': 
 
@@ -381,17 +430,7 @@ void game_loop() {
                     c=map(fx,fy);
                 }
 
-                this_enemy = 0;
-                this_enemy = which_enemy(fx,fy);
-                if(this_enemy > 0) {
-                    gotoxy(0,0);
-                    printf("hit! %s %3d", c, this_enemy);
-                } else {
-                    gotoxy(0,0);
-                    printf("hit but %s",c);
-                }
-                this_enemy = 0;
-
+                attack(10,fx,fy);
 
               }
 
@@ -508,6 +547,10 @@ void game_loop() {
 
 
 int main() {
+
+    // Use current time as 
+    // seed for random generator 
+    srand(1); 
 
     /* Clear Screen */
     clrscr();
