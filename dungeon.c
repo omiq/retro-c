@@ -343,6 +343,37 @@ unsigned int which_enemy(ex,ey) {
 
 }
 
+// Move the enemies for a given room
+void move_enemies() {
+
+    // Enemies starts at 1, 0 = no enemy
+    for(i=1;i<enemy_count+1;i++)
+    {
+        if(enemies[i].room == room && enemies[i].health>0){
+            // Rat
+            if(enemies[i].tile == 158) {
+                enemies[i].old_x = enemies[i].x;
+                enemies[i].old_y = enemies[i].y; 
+                if(enemies[i].x > x && map(enemies[i].x-1,enemies[i].y)==32) enemies[i].x-=1;
+                if(enemies[i].x < x && map(enemies[i].x+1,enemies[i].y)==32) enemies[i].x+=1;
+                if(enemies[i].y > y && map(enemies[i].x,enemies[i].y-1)==32) enemies[i].y-=1;
+                if(enemies[i].y < y && map(enemies[i].x,enemies[i].y+1)==32) enemies[i].y+=1;
+                
+                if(map(enemies[i].x,enemies[i].y)!=32) {
+                    enemies[i].x = enemies[i].old_x;
+                    enemies[i].y = enemies[i].old_y;
+                }else{
+                    set_map(enemies[i].old_x, enemies[i].old_y, 32);
+                    cputcxy(enemies[i].old_x,enemies[i].old_y,map(enemies[i].old_x,enemies[i].old_y));
+                }
+                set_map(enemies[i].x, enemies[i].y, enemies[i].tile);
+                cputcxy(enemies[i].x,enemies[i].y,enemies[i].tile);
+            }
+        }
+    }
+
+}
+
 void draw_screen() {
 
     int row,col;
@@ -403,7 +434,7 @@ void draw_move(bool replace) {
     // Draw new location
     cputcxy(old_x,old_y,map(old_x,old_y));
     cputcxy(x,y,64); 
-    
+    set_map(x, y, 64);
 }
 
 
@@ -531,6 +562,9 @@ void game_loop() {
         direction_x = x-old_x;
         direction_y = y-old_y;
     }
+
+
+    move_enemies();
 
     // Backup the location
     old_x = x;
@@ -688,6 +722,9 @@ void game_loop() {
                 idols=0;
             }
             break;
+
+        case 64: // Player
+            break;
         
         default:
             
@@ -713,6 +750,8 @@ void game_loop() {
     if(health<1) {
         in_play = false;
     }
+
+    
     
 }
 
