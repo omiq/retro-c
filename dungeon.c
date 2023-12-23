@@ -346,29 +346,44 @@ unsigned int which_enemy(ex,ey) {
 // Move the enemies for a given room
 void move_enemies() {
 
+    unsigned char rnd;
+
     // Enemies starts at 1, 0 = no enemy
     for(i=1;i<enemy_count+1;i++)
     {
         if(enemies[i].room == room && enemies[i].health>0){
-            // Rat
+            
+            enemies[i].old_x = enemies[i].x;
+            enemies[i].old_y = enemies[i].y; 
+            
+            // Rat is random
             if(enemies[i].tile == 158) {
-                enemies[i].old_x = enemies[i].x;
-                enemies[i].old_y = enemies[i].y; 
+                rnd = (rand() % (4)) + 1; 
+                if(rnd == 4 && map(enemies[i].x-1,enemies[i].y)==32) enemies[i].x-=1;
+                if(rnd == 2 && map(enemies[i].x+1,enemies[i].y)==32) enemies[i].x+=1;
+                if(rnd == 1 && map(enemies[i].x,enemies[i].y-1)==32) enemies[i].y-=1;
+                if(rnd == 3 && map(enemies[i].x,enemies[i].y+1)==32) enemies[i].y+=1;
+            }
+
+            // Gobbo goes for player
+            if(enemies[i].tile == 38) {
                 if(enemies[i].x > x && map(enemies[i].x-1,enemies[i].y)==32) enemies[i].x-=1;
                 if(enemies[i].x < x && map(enemies[i].x+1,enemies[i].y)==32) enemies[i].x+=1;
                 if(enemies[i].y > y && map(enemies[i].x,enemies[i].y-1)==32) enemies[i].y-=1;
                 if(enemies[i].y < y && map(enemies[i].x,enemies[i].y+1)==32) enemies[i].y+=1;
-                
-                if(map(enemies[i].x,enemies[i].y)!=32) {
-                    enemies[i].x = enemies[i].old_x;
-                    enemies[i].y = enemies[i].old_y;
-                }else{
-                    set_map(enemies[i].old_x, enemies[i].old_y, 32);
-                    cputcxy(enemies[i].old_x,enemies[i].old_y,map(enemies[i].old_x,enemies[i].old_y));
-                }
-                set_map(enemies[i].x, enemies[i].y, enemies[i].tile);
-                cputcxy(enemies[i].x,enemies[i].y,enemies[i].tile);
             }
+
+            // Redraw
+            if(map(enemies[i].x,enemies[i].y)!=32) {
+                enemies[i].x = enemies[i].old_x;
+                enemies[i].y = enemies[i].old_y;
+            }else{
+                set_map(enemies[i].old_x, enemies[i].old_y, 32);
+                cputcxy(enemies[i].old_x,enemies[i].old_y,map(enemies[i].old_x,enemies[i].old_y));
+            }
+            set_map(enemies[i].x, enemies[i].y, enemies[i].tile);
+            cputcxy(enemies[i].x,enemies[i].y,enemies[i].tile);
+            
         }
     }
 
