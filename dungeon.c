@@ -1,6 +1,6 @@
 /*
 
- cl65 -t c64 -v -o dungeon64.prg dungeon.c && x64sc dungeon64.prg > /dev/null
+ cl65 -t pet -v -o dungeonPET.prg dungeon.c && xpet dungeonPET.prg > /dev/null
  cl65 -t c64 -v -o dungeon64.prg dungeon.c && x64sc dungeon64.prg > /dev/null
 
 */
