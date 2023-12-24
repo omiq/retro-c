@@ -50,7 +50,7 @@ struct enemy {
     unsigned char y;
     unsigned char old_x;
     unsigned char old_y;
-    unsigned char health;
+    char health;
     unsigned char strength;
     unsigned char speed;
     unsigned char armour;
@@ -335,7 +335,7 @@ unsigned int which_enemy(ex,ey) {
     // Enemies starts at 1, 0 = no enemy
     for(i=1;i<enemy_count+1;i++)
     {
-        if(enemies[i].x == ex && enemies[i].y == ey) return i;
+        if(enemies[i].x == ex && enemies[i].y == ey && enemies[i].health >= 1) return i;
     }
 
     // No enemies
@@ -535,13 +535,13 @@ void attack(weapon, ax, ay)
         if(enemies[this_enemy].health<weapon) 
         {
             enemies[this_enemy].health = 0;
-        }
-        else
-        {
+
+        } else {
             enemies[this_enemy].health-=weapon;
-            printf("hit!! enemy health: %3d", enemies[this_enemy].health);
-        }
-       
+        }    
+
+        printf("hit!! enemy health: %3d", enemies[this_enemy].health);
+
         
     } else {
         printf("miss! enemy health: %3d", enemies[this_enemy].health);
@@ -551,7 +551,7 @@ void attack(weapon, ax, ay)
         }
     }
 
-    if(enemies[this_enemy].health==0) {
+    if(enemies[this_enemy].health < weapon) {
 
         // Success!
         gotoxy(0,0);
@@ -560,6 +560,7 @@ void attack(weapon, ax, ay)
         // Draw tile in new location
         cputcxy(ax,ay,32); 
         set_map(ax,ay,32);
+        enemies[this_enemy].tile = 32;
 
         // Up the score
         score+=10;
