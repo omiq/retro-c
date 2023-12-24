@@ -336,6 +336,7 @@ unsigned int which_enemy(ex,ey) {
     for(i=1;i<enemy_count+1;i++)
     {
         if(enemies[i].x == ex && enemies[i].y == ey && enemies[i].health >= 1) return i;
+       
     }
 
     // No enemies
@@ -379,7 +380,7 @@ void move_enemies() {
                 enemies[i].y = enemies[i].old_y;
             }else{
                 set_map(enemies[i].old_x, enemies[i].old_y, 32);
-                cputcxy(enemies[i].old_x,enemies[i].old_y,map(enemies[i].old_x,enemies[i].old_y));
+                cputcxy(enemies[i].old_x,enemies[i].old_y, 32);
             }
             set_map(enemies[i].x, enemies[i].y, enemies[i].tile);
             cputcxy(enemies[i].x,enemies[i].y,enemies[i].tile);
