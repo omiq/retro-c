@@ -327,6 +327,13 @@ void set_map(char x, char y, int tile) {
     
 }
 
+
+
+unsigned int dumb_wait(unsigned int delay) {
+    for(timer=0; timer<delay; timer++) {}
+    return timer;
+}
+
 // Returns the enemy for a given x,y coord
 unsigned int which_enemy(ex,ey) {
 
@@ -368,7 +375,7 @@ void attack(weapon, ax, ay)
         }    
 
         printf("hit!! enemy health: %3d", enemies[this_enemy].health);
-
+        dumb_wait(1000);
         
     } else {
         printf("miss! enemy health: %3d", enemies[this_enemy].health);
@@ -376,6 +383,7 @@ void attack(weapon, ax, ay)
         {
             health -= enemies[this_enemy].strength;
         }
+        dumb_wait(1000);
     }
 
     if(enemies[this_enemy].health < weapon) {
@@ -412,14 +420,25 @@ void enemy_attack(this_enemy, ax, ay)
         }    
 
         printf("ouch! health: %3d", health);
+        dumb_wait(1000);
 
         
     } else {
-        printf("miss! health: %3d", health);
+        printf("block health: %3d", health);
         if((x == ax && y == ay)||(x == ax && (y == ay + 1 || y == ay - 1)) || (y == ay && (x == ax + 1 || x == ax - 1))) 
         {
-            enemies[this_enemy].health -= 5;
+            enemies[this_enemy].health -= 15;
+            if(enemies[this_enemy].health<15) {
+               enemies[this_enemy].health=0;
+                // Draw tile in new location
+                cputcxy(enemies[this_enemy].x,enemies[this_enemy].y,32); 
+                set_map(enemies[this_enemy].x,enemies[this_enemy].y,32);
+                enemies[this_enemy].tile = 32;
+
+            }
         }
+        rintf("enemy defeated!");
+        dumb_wait(1000);
     }
 
     if(health < enemies[this_enemy].strength) {
@@ -464,7 +483,8 @@ void move_enemies() {
             }
 
             // Redraw
-            if(map(enemies[i].x,enemies[i].y)!=32) {
+            c=map(enemies[i].x,enemies[i].y);
+            if(c!=32) {
                 if(c==64) enemy_attack(i, enemies[i].x,enemies[i].y);
                 enemies[i].x = enemies[i].old_x;
                 enemies[i].y = enemies[i].old_y;
@@ -504,12 +524,6 @@ void petscii() {
         cputcxy(x+3,y,i+64);
         i++;
     }}
-}
-
-
-unsigned int dumb_wait(unsigned int delay) {
-    for(timer=0; timer<delay; timer++) {}
-    return timer;
 }
 
 
