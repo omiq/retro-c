@@ -300,7 +300,7 @@ void load_room() {
             enemies[enemy_count].old_x = enemies[enemy_count].x;
             enemies[enemy_count].old_y = enemies[enemy_count].y;
             enemies[enemy_count].health = 15;
-            enemies[enemy_count].strength = 1;
+            enemies[enemy_count].strength = 5;
             enemies[enemy_count].speed = 2;
             enemies[enemy_count].armour = 0;
 
@@ -428,8 +428,8 @@ void enemy_attack(this_enemy, ax, ay)
         
         if((x == ax && y == ay)||(x == ax && (y == ay + 1 || y == ay - 1)) || (y == ay && (x == ax + 1 || x == ax - 1))) 
         {
-            enemies[this_enemy].health -= 15;
-            if(enemies[this_enemy].health<15) {
+            enemies[this_enemy].health -= 10;
+            if(enemies[this_enemy].health<10) {
                enemies[this_enemy].health=0;
                 // Draw tile in new location
                 cputcxy(enemies[this_enemy].x,enemies[this_enemy].y,32); 
