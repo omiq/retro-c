@@ -344,6 +344,95 @@ unsigned int which_enemy(ex,ey) {
 
 }
 
+
+void attack(weapon, ax, ay)
+{
+    int rnum = 0;
+    this_enemy = 0;
+    this_enemy = which_enemy(ax,ay);
+    if(this_enemy == 0) {
+        return;
+    } 
+
+    rnum = (rand() % (20 - 1 + 1)) + 1; 
+    gotoxy(0,0);
+    if(rnum > enemies[this_enemy].armour+enemies[this_enemy].speed) {
+
+        // Damage!
+        if(enemies[this_enemy].health<weapon) 
+        {
+            enemies[this_enemy].health = 0;
+
+        } else {
+            enemies[this_enemy].health-=weapon;
+        }    
+
+        printf("hit!! enemy health: %3d", enemies[this_enemy].health);
+
+        
+    } else {
+        printf("miss! enemy health: %3d", enemies[this_enemy].health);
+        if((x == ax && y == ay)||(x == ax && (y == ay + 1 || y == ay - 1)) || (y == ay && (x == ax + 1 || x == ax - 1))) 
+        {
+            health -= enemies[this_enemy].strength;
+        }
+    }
+
+    if(enemies[this_enemy].health < weapon) {
+
+        // Success!
+        gotoxy(0,0);
+        printf("enemy defeated!                      ");
+
+        // Draw tile in new location
+        cputcxy(ax,ay,32); 
+        set_map(ax,ay,32);
+        enemies[this_enemy].tile = 32;
+
+        // Up the score
+        score+=10;
+    }
+
+}
+
+void enemy_attack(this_enemy, ax, ay)
+{
+    int rnum = 0;
+    rnum = (rand() % (20 - 1 + 1)) + 1; 
+    gotoxy(0,0);
+    if(rnum > 10) {
+
+        // Damage!
+        if(health<enemies[this_enemy].strength || health < 1) 
+        {
+            health = 0;
+
+        } else {
+            health-=enemies[this_enemy].strength;
+        }    
+
+        printf("ouch! health: %3d", health);
+
+        
+    } else {
+        printf("miss! health: %3d", health);
+        if((x == ax && y == ay)||(x == ax && (y == ay + 1 || y == ay - 1)) || (y == ay && (x == ax + 1 || x == ax - 1))) 
+        {
+            enemies[this_enemy].health -= 5;
+        }
+    }
+
+    if(health < enemies[this_enemy].strength) {
+
+        // Fail!
+        gotoxy(0,0);
+        printf("enemy defeated you!                  ");
+        health = 0;
+    }
+
+}
+
+
 // Move the enemies for a given room
 void move_enemies() {
 
@@ -360,22 +449,23 @@ void move_enemies() {
             // Rat is random
             if(enemies[i].tile == 158) {
                 rnd = (rand() % (4)) + 1; 
-                if(rnd == 4 && map(enemies[i].x-1,enemies[i].y)==32) enemies[i].x-=1;
-                if(rnd == 2 && map(enemies[i].x+1,enemies[i].y)==32) enemies[i].x+=1;
-                if(rnd == 1 && map(enemies[i].x,enemies[i].y-1)==32) enemies[i].y-=1;
-                if(rnd == 3 && map(enemies[i].x,enemies[i].y+1)==32) enemies[i].y+=1;
+                if(rnd == 4) enemies[i].x-=1;
+                if(rnd == 2) enemies[i].x+=1;
+                if(rnd == 1) enemies[i].y-=1;
+                if(rnd == 3) enemies[i].y+=1;
             }
 
             // Gobbo goes for player
             if(enemies[i].tile == 38) {
-                if(enemies[i].x > x && map(enemies[i].x-1,enemies[i].y)==32) enemies[i].x-=1;
-                if(enemies[i].x < x && map(enemies[i].x+1,enemies[i].y)==32) enemies[i].x+=1;
-                if(enemies[i].y > y && map(enemies[i].x,enemies[i].y-1)==32) enemies[i].y-=1;
-                if(enemies[i].y < y && map(enemies[i].x,enemies[i].y+1)==32) enemies[i].y+=1;
+                if(enemies[i].x > x) enemies[i].x-=1;
+                if(enemies[i].x < x) enemies[i].x+=1;
+                if(enemies[i].y > y) enemies[i].y-=1;
+                if(enemies[i].y < y) enemies[i].y+=1;
             }
 
             // Redraw
             if(map(enemies[i].x,enemies[i].y)!=32) {
+                if(c==64) enemy_attack(i, enemies[i].x,enemies[i].y);
                 enemies[i].x = enemies[i].old_x;
                 enemies[i].y = enemies[i].old_y;
             }else{
@@ -482,7 +572,6 @@ void title_screen() {
 #elif defined __C64__
 
 void title_screen() {
-    
     clrscr();
 
     for(i=0; i<1000; i++) {
@@ -517,56 +606,6 @@ bool game_over() {
     } else {
         return true;
     }
-}
-
-void attack(weapon, ax, ay)
-{
-    int rnum = 0;
-    this_enemy = 0;
-    this_enemy = which_enemy(ax,ay);
-    if(this_enemy == 0) {
-        return;
-    } 
-
-    rnum = (rand() % (20 - 1 + 1)) + 1; 
-    gotoxy(0,0);
-    if(rnum > enemies[this_enemy].armour+enemies[this_enemy].speed) {
-
-        // Damage!
-        if(enemies[this_enemy].health<weapon) 
-        {
-            enemies[this_enemy].health = 0;
-
-        } else {
-            enemies[this_enemy].health-=weapon;
-        }    
-
-        printf("hit!! enemy health: %3d", enemies[this_enemy].health);
-
-        
-    } else {
-        printf("miss! enemy health: %3d", enemies[this_enemy].health);
-        if((x == ax && y == ay)||(x == ax && (y == ay + 1 || y == ay - 1)) || (y == ay && (x == ax + 1 || x == ax - 1))) 
-        {
-            health -= enemies[this_enemy].strength;
-        }
-    }
-
-    if(enemies[this_enemy].health < weapon) {
-
-        // Success!
-        gotoxy(0,0);
-        printf("enemy defeated!                      ");
-
-        // Draw tile in new location
-        cputcxy(ax,ay,32); 
-        set_map(ax,ay,32);
-        enemies[this_enemy].tile = 32;
-
-        // Up the score
-        score+=10;
-    }
-
 }
 
 void game_loop() {
