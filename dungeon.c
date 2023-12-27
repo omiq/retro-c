@@ -375,7 +375,7 @@ void attack(weapon, ax, ay)
         }    
         gotoxy(0,0);
         printf("hit!! enemy health: %3d    ", enemies[this_enemy].health);
-        dumb_wait(1000);
+        timer=dumb_wait(1000);
         
     } else {
         gotoxy(0,0);
@@ -384,7 +384,7 @@ void attack(weapon, ax, ay)
         {
             health -= enemies[this_enemy].strength;
         }
-        dumb_wait(1000);
+        timer=dumb_wait(1000);
     }
 
     if(enemies[this_enemy].health < weapon) {
@@ -400,7 +400,7 @@ void attack(weapon, ax, ay)
         // cputcxy(x,y,64);
         // Up the score
         score+=10;
-        dumb_wait(1000);
+        timer=dumb_wait(1000);
     }
 
 }
@@ -422,7 +422,7 @@ void enemy_attack(this_enemy)
         }    
         gotoxy(0,0);
         printf("ouch! health: %3d        ", health);
-        dumb_wait(1000);
+        timer=dumb_wait(1000);
 
         
     } else {
@@ -441,7 +441,7 @@ void enemy_attack(this_enemy)
                 printf("block health: %3d      ", health);}
         }
         
-        dumb_wait(1000);
+        timer=dumb_wait(1000);
     
 
     if(health < 1) {
@@ -450,7 +450,7 @@ void enemy_attack(this_enemy)
         gotoxy(0,0);
         printf("enemy defeated you!                  ");
         health = 0;
-        dumb_wait(1000);
+        timer=dumb_wait(1000);
     }
 
 }
@@ -616,7 +616,11 @@ void title_screen() {
 
 bool game_over() {
     clrscr();
-    printf("game over\n\nah, such a shame,\nyou were doing so well!\n\nscore:%03d\n\nplay again (y/n)?",score);
+    printf("game over\n\n");
+    timer=dumb_wait(1000);
+    printf("ah, such a shame,\nyou were doing so well!\n\n");
+    timer=dumb_wait(1000);
+    printf("score:%03d\n\nplay again (y/n)?",score);
     key=cgetc();
     in_play=false;
     if(key=='n') {
