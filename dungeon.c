@@ -495,10 +495,10 @@ void move_enemies() {
                 enemies[i].y = enemies[i].old_y;
             }else{
                 set_map(enemies[i].old_x, enemies[i].old_y, 32);
-                cputcxy(enemies[i].old_x,enemies[i].old_y, 32);
+                cputcxy(enemies[i].old_x, enemies[i].old_y, 32);
             }
             set_map(enemies[i].x, enemies[i].y, enemies[i].tile);
-            cputcxy(enemies[i].x,enemies[i].y,enemies[i].tile);
+            cputcxy(enemies[i].x, enemies[i].y,enemies[i].tile);
             
         }
     }
@@ -646,69 +646,70 @@ void game_loop() {
     old_y = y;
 
     // keys;
-    switch (key=cgetc()) 
-    { 
-        gotoxy(0,0);
-        printf("                           ");
+    if(kbhit()) {
+        switch (key=cgetc()) 
+        { 
+            gotoxy(0,0);
+            printf("                           ");
 
-        case 'w':
-            if(y>0) y--; 
-            break; 
-        case 'a': 
-            if(x>0) x--; 
-            break; 
-        case 'A': 
-        case 'o':
-            if(sword==true) {
-                draw_momentary_object(x-1,y,x-1,y,131,2000); 
-                attack(10,x-1,y);
-            }
-            break;     
-        case 's': 
-            if(y<24) y++; 
-            break; 
-        case 'd': 
-            if(x<39) x++; 
-            break; 
-        case 'D': 
-        case 'p':
-            if(sword==true) {
-                draw_momentary_object(x+1,y,x+1,y,31,2000); 
-                attack(10,x+1,y);
-            }
-            break; 
-        case 'f': 
+            case 'w':
+                if(y>0) y--; 
+                break; 
+            case 'a': 
+                if(x>0) x--; 
+                break; 
+            case 'A': 
+            case 'o':
+                if(sword==true) {
+                    draw_momentary_object(x-1,y,x-1,y,131,2000); 
+                    attack(10,x-1,y);
+                }
+                break;     
+            case 's': 
+                if(y<24) y++; 
+                break; 
+            case 'd': 
+                if(x<39) x++; 
+                break; 
+            case 'D': 
+            case 'p':
+                if(sword==true) {
+                    draw_momentary_object(x+1,y,x+1,y,31,2000); 
+                    attack(10,x+1,y);
+                }
+                break; 
+            case 'f': 
 
-            if(magic > 5) {
+                if(magic > 5) {
 
-                magic-=5;
-                fx = x+direction_x;
-                fy = y+direction_y;  
+                    magic-=5;
+                    fx = x+direction_x;
+                    fy = y+direction_y;  
 
-                c=map(fx,fy);
-                while(c==32 && magic > 0) {             
-                    draw_momentary_object(fx,fy,fx,fy,'*',200); 
-                    magic-=1;
-                    fx = fx+direction_x;
-                    fy = fy+direction_y;  
                     c=map(fx,fy);
+                    while(c==32 && magic > 0) {             
+                        draw_momentary_object(fx,fy,fx,fy,'*',200); 
+                        magic-=1;
+                        fx = fx+direction_x;
+                        fy = fy+direction_y;  
+                        c=map(fx,fy);
+                    }
+
+                    attack(10,fx,fy);
+
                 }
 
-                attack(10,fx,fy);
-
-              }
-
-            break;            
-        case 'Q':
-        case 3:
-            in_play = false;
-            break;
-        default: 
-            gotoxy(0,0);
-            printf("%d",key);
-            break; 
+                break;            
+            case 'Q':
+            case 3:
+                in_play = false;
+                break;
+            default: 
+                gotoxy(0,0);
+                printf("%d",key);
+                break; 
+        }
     }
-
     // Anything in our path?
     obstruction=false;
     c=map(x,y);
