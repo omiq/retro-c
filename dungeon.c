@@ -437,7 +437,7 @@ void enemy_attack(this_enemy, ax, ay)
 
             }
         }
-        rintf("enemy defeated!");
+        printf("enemy defeated!");
         dumb_wait(1000);
     }
 
