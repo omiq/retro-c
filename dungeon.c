@@ -658,6 +658,7 @@ void game_loop() {
             if(x>0) x--; 
             break; 
         case 'A': 
+        case 'o':
             if(sword==true) {
                 draw_momentary_object(x-1,y,x-1,y,131,2000); 
                 attack(10,x-1,y);
@@ -670,6 +671,7 @@ void game_loop() {
             if(x<39) x++; 
             break; 
         case 'D': 
+        case 'p':
             if(sword==true) {
                 draw_momentary_object(x+1,y,x+1,y,31,2000); 
                 attack(10,x+1,y);
@@ -698,9 +700,12 @@ void game_loop() {
 
             break;            
         case 'Q':
+        case 3:
             in_play = false;
             break;
         default: 
+            gotoxy(0,0);
+            printf("%d",key);
             break; 
     }
 
@@ -783,6 +788,7 @@ void game_loop() {
             break;
 
         case 158: // Rats
+        case 222:
             attack(5,x,y);
             obstruction=true;
             break;
@@ -809,7 +815,7 @@ void game_loop() {
             
             if(c!=32) {
                 gotoxy(0,0);
-                printf("%03d",c);
+                printf("bumped into ...... %03d",c);
                 obstruction=true;
             }
             
