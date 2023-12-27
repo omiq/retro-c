@@ -424,7 +424,7 @@ void enemy_attack(this_enemy, ax, ay)
 
         
     } else {
-        printf("block health: %3d", health);
+        
         if((x == ax && y == ay)||(x == ax && (y == ay + 1 || y == ay - 1)) || (y == ay && (x == ax + 1 || x == ax - 1))) 
         {
             enemies[this_enemy].health -= 15;
@@ -434,10 +434,10 @@ void enemy_attack(this_enemy, ax, ay)
                 cputcxy(enemies[this_enemy].x,enemies[this_enemy].y,32); 
                 set_map(enemies[this_enemy].x,enemies[this_enemy].y,32);
                 enemies[this_enemy].tile = 32;
-
-            }
+                printf("enemy defeated!");
+            }else {printf("block health: %3d", health);}
         }
-        printf("enemy defeated!");
+        
         dumb_wait(1000);
     }
 
