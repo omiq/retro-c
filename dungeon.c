@@ -397,7 +397,7 @@ void attack(weapon, ax, ay)
         cputcxy(ax,ay,32); 
         set_map(ax,ay,32);
         enemies[this_enemy].tile = 32;
-
+        cputcxy(x,y,64);
         // Up the score
         score+=10;
     }
@@ -436,7 +436,8 @@ void enemy_attack(this_enemy, ax, ay)
                 set_map(enemies[this_enemy].x,enemies[this_enemy].y,32);
                 enemies[this_enemy].tile = 32;
                 gotoxy(0,0);
-                printf("enemy defeated!");
+                printf("enemy defeated!            ");
+                cputcxy(x,y,64);
             }else {
                 gotoxy(0,0);
                 printf("block health: %3d", health);}
@@ -647,6 +648,8 @@ void game_loop() {
     // keys;
     switch (key=cgetc()) 
     { 
+        gotoxy(0,0);
+        printf("                           ");
 
         case 'w':
             if(y>0) y--; 
