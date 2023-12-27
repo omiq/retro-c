@@ -159,7 +159,7 @@ unsigned char rooms[] = {
  32,102, 32, 0, 32, 32, 32, 32, 32, 11, 32, 32, 32, 38, 32, 32, 32, 32, 32, 32, 32,102, 32, 32, 32, 94, 32, 32, 32, 32, 32, 32, 32,102, 32, 32, 32, 32, 32, 32,
  32,102, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,  9, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,102, 32, 32, 32, 32, 32, 32,
  32,102, 32, 32, 32, 32, 81, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 38, 32, 32, 32,102, 32, 32, 32, 32, 32, 32, 32, 88, 32, 32, 32,102, 32, 32, 32, 32, 32, 32,
- 32,102, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,102, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,102, 32, 32, 32, 32, 32, 32,
+ 32,102, 32, 83, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,102, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,102, 32, 32, 32, 32, 32, 32,
  32,102, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,102, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,102, 32, 32, 32, 32, 32, 32,
  32,102, 32, 32, 32, 32, 32, 32, 32, 32, 32,102,102,102,102,102, 45,102,102,102,102,102,102,102,102,102, 32, 32, 32, 32, 32, 83, 32,102, 32, 32, 32, 32, 32, 32,
  32,102,102,102,102,102,102,102,102,102,102,102, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,102, 32, 32, 32, 32, 32, 32, 32,102, 32, 32, 32, 32, 32, 32,
@@ -374,12 +374,12 @@ void attack(weapon, ax, ay)
             enemies[this_enemy].health-=weapon;
         }    
         gotoxy(0,0);
-        printf("hit!! enemy health: %3d", enemies[this_enemy].health);
+        printf("hit!! enemy health: %3d    ", enemies[this_enemy].health);
         dumb_wait(1000);
         
     } else {
         gotoxy(0,0);
-        printf("miss! enemy health: %3d", enemies[this_enemy].health);
+        printf("miss! enemy health: %3d    ", enemies[this_enemy].health);
         if((x == ax && y == ay)||(x == ax && (y == ay + 1 || y == ay - 1)) || (y == ay && (x == ax + 1 || x == ax - 1))) 
         {
             health -= enemies[this_enemy].strength;
@@ -392,19 +392,20 @@ void attack(weapon, ax, ay)
         // Success!
         gotoxy(0,0);
         printf("enemy defeated!                      ");
-
+        
         // Draw tile in new location
         cputcxy(ax,ay,32); 
         set_map(ax,ay,32);
         enemies[this_enemy].tile = 32;
-        cputcxy(x,y,64);
+        // cputcxy(x,y,64);
         // Up the score
         score+=10;
+        dumb_wait(1000);
     }
 
 }
 
-void enemy_attack(this_enemy, ax, ay)
+void enemy_attack(this_enemy)
 {
     int rnum = 0;
     rnum = (rand() % (20 - 1 + 1)) + 1; 
@@ -412,7 +413,7 @@ void enemy_attack(this_enemy, ax, ay)
     if(rnum > 10) {
 
         // Damage!
-        if(health<enemies[this_enemy].strength || health < 1) 
+        if(health < 1 || (health-enemies[this_enemy].strength) < 1) 
         {
             health = 0;
 
@@ -420,16 +421,13 @@ void enemy_attack(this_enemy, ax, ay)
             health-=enemies[this_enemy].strength;
         }    
         gotoxy(0,0);
-        printf("ouch! health: %3d", health);
+        printf("ouch! health: %3d        ", health);
         dumb_wait(1000);
 
         
     } else {
-        
-        if((x == ax && y == ay)||(x == ax && (y == ay + 1 || y == ay - 1)) || (y == ay && (x == ax + 1 || x == ax - 1))) 
-        {
-            enemies[this_enemy].health -= 10;
-            if(enemies[this_enemy].health<10) {
+            enemies[this_enemy].health -= 5;
+            if(enemies[this_enemy].health<1) {
                enemies[this_enemy].health=0;
                 // Draw tile in new location
                 cputcxy(enemies[this_enemy].x,enemies[this_enemy].y,32); 
@@ -437,21 +435,22 @@ void enemy_attack(this_enemy, ax, ay)
                 enemies[this_enemy].tile = 32;
                 gotoxy(0,0);
                 printf("enemy defeated!            ");
-                cputcxy(x,y,64);
+                
             }else {
                 gotoxy(0,0);
-                printf("block health: %3d", health);}
+                printf("block health: %3d      ", health);}
         }
         
         dumb_wait(1000);
-    }
+    
 
-    if(health < enemies[this_enemy].strength) {
+    if(health < 1) {
 
         // Fail!
         gotoxy(0,0);
         printf("enemy defeated you!                  ");
         health = 0;
+        dumb_wait(1000);
     }
 
 }
@@ -490,9 +489,9 @@ void move_enemies() {
             // Redraw
             c=map(enemies[i].x,enemies[i].y);
             if(c!=32) {
-                if(c==64) enemy_attack(i, enemies[i].x,enemies[i].y);
                 enemies[i].x = enemies[i].old_x;
                 enemies[i].y = enemies[i].old_y;
+                if(c==64) enemy_attack(i);
             }else{
                 set_map(enemies[i].old_x, enemies[i].old_y, 32);
                 cputcxy(enemies[i].old_x, enemies[i].old_y, 32);
@@ -645,12 +644,11 @@ void game_loop() {
     old_x = x;
     old_y = y;
 
-    // keys;
-    if(kbhit()) {
+    //if(kbhit()) { Remove comment to make more action than turn-based
+        
+        // Check keys;
         switch (key=cgetc()) 
         { 
-            gotoxy(0,0);
-            printf("                           ");
 
             case 'w':
                 if(y>0) y--; 
@@ -704,12 +702,18 @@ void game_loop() {
             case 3:
                 in_play = false;
                 break;
-            default: 
-                gotoxy(0,0);
-                printf("%d",key);
+            default:
+                // Figure out scan codes 
+                //gotoxy(0,0);
+                //printf("%d",key);
                 break; 
         }
-    }
+    //} Remove comment to make more action than turn-based
+
+    gotoxy(0,0);
+    printf("                              ");
+
+
     // Anything in our path?
     obstruction=false;
     c=map(x,y);
@@ -778,6 +782,7 @@ void game_loop() {
 
         case 147: // Health
             health+=25;
+            if(health>100) health=100; // Can't be more than 100%!
             break;
 
 
@@ -816,8 +821,9 @@ void game_loop() {
             // convert integer to ascii: itoa(c,buffer,10);
             
             if(c!=32) {
-                gotoxy(0,0);
-                printf("bumped into ...... %03d",c);
+                // Figure out what the code is for tile
+                //gotoxy(0,0);
+                //printf("bumped into ...... %03d",c);
                 obstruction=true;
             }
             
