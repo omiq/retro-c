@@ -806,6 +806,7 @@ void game_loop() {
             }
             break;
 
+        case 0:
         case 64: // Player
             break;
         
