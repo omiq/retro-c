@@ -428,6 +428,7 @@ void enemy_attack(this_enemy, ax, ay)
         if((x == ax && y == ay)||(x == ax && (y == ay + 1 || y == ay - 1)) || (y == ay && (x == ax + 1 || x == ax - 1))) 
         {
             enemies[this_enemy].health -= 15;
+            gotoxy(0,0);
             if(enemies[this_enemy].health<15) {
                enemies[this_enemy].health=0;
                 // Draw tile in new location
