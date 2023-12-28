@@ -22,6 +22,19 @@
 #endif
 #endif
 
+
+
+#define VIC_BASE_RAM			(0x8000)
+#define SCREEN_RAM				((char*)VIC_BASE_RAM+0x0400)
+#define CHARMAP_RAM				((char*)VIC_BASE_RAM+0x0800)
+#define SCREEN_WIDTH			40
+#define SCREEN_HEIGHT			25
+#define COLOR_OFFSET			(int)(COLOUR_RAM - SCREEN_RAM)
+#define CHARS_RAM			    0x80
+#define CHAR_SPACE				0x20
+#define RAM_BLOCK				(CHARS_RAM + CHAR_SPACE)
+#define CHARMAP_DEST			(RAM_BLOCK + 1)
+
 // Global key variable
 bool run=true;
 bool in_play=false;
@@ -590,6 +603,26 @@ void title_screen() {
 #elif defined __C64__
 
 void title_screen() {
+
+
+	// Set up a user defined font, and move the screen to the appropriate position
+	CIA2.ddra |= 0x03;
+	CIA2.pra = (CIA2.pra & 0xfc) | (3-(VIC_BASE_RAM / 0x4000));
+	VIC.addr = ((((int)(SCREEN_RAM - VIC_BASE_RAM) / 0x0400) << 4) + (((int)(CHARMAP_RAM - VIC_BASE_RAM) / 0x0800) << 1));
+	VIC.ctrl2 |= 16;
+
+    	// Copy the standard font to where the redefined char font will live
+	CIA1.cra = (CIA1.cra & 0xfe);
+	*(char*)0x01 = *(char*)0x01 & 0xfb;
+	memcpy(CHARMAP_RAM,COLOUR_RAM,256*8);
+	*(char*)0x01 = *(char*)0x01 | 0x04;
+	CIA1.cra = (CIA1.cra | 0x01);
+
+	// copy the character data 
+	memcpy(&CHARMAP_RAM[8*CHARMAP_DEST], &gfxTiles[0][0], sizeof(gfxTiles));
+
+
+
     clrscr();
 
     for(i=0; i<1000; i++) {
