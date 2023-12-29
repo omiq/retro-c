@@ -5,8 +5,6 @@
 
 */
 
-// C65 key = 37 door = 63, 64  vertical door 66
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -106,7 +104,9 @@ unsigned char title_screen_data[] = {
 #endif
 
 #ifdef __C64__
+// C65 key = 37 door = 63, 64  vertical door 66
 
+    #define keytile 37 
     unsigned char chars[]={
         0x5C,0x57,0xE9,0x59,0x39,0x1E,0x14,0x36,
 0x10,0x28,0x28,0x44,0x7C,0x44,0xEE,0x00,
@@ -521,6 +521,12 @@ unsigned int map(char x, char y) {
     unsigned char c;
 
     c = game_map[40*y+x];
+
+#ifdef __C64__
+    if(c==11) c=keytile;
+    if(c==45) c=66;
+    if(c==9) c=63;
+#endif    
     if(c>64) c+=64;
     return c;
     
