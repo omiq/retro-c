@@ -863,10 +863,13 @@ void title_screen() {
 
 void title_screen() {
 
+        memcpy(49152,&chars,sizeof(chars)); // load character data 
+        POKE(56576,PEEK(57576)&252);
+        POKE(53272,32); // $3000 would be POKE(53272,(PEEK(53272)&240)+12);
+        POKE(648,200);
 
-
-    memcpy(0x3000,&chars,sizeof(chars)); // load character data into 3000
-    POKE(53272,(PEEK(53272)&240)+12);
+//    memcpy(0x3000,&chars,sizeof(chars)); // load character data into 3000
+//    POKE(53272,(PEEK(53272)&240)+12);
     clrscr();
 
     for(i=0; i<1000; i++) {
