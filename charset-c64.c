@@ -267,14 +267,16 @@ unsigned int key,i,x,y;
 void petscii() {
 
     clrscr();
-    for(i=1024;i<1280;i++) {
-        POKE(i,i-1024);
+    for(i=51200;i<51200+256;i++) {
+        POKE(i,i-51200);
     }
 }
 
 void main() {
-        memcpy(0x3000,&chars,sizeof(chars)); // load character data into 3000
-        POKE(53272,(PEEK(53272)&240)+12);
+        memcpy(49152,&chars,sizeof(chars)); // load character data 
+        POKE(56576,PEEK(57576)&252);
+        POKE(53272,32); // $3000 would be POKE(53272,(PEEK(53272)&240)+12);
+        POKE(648,200);
         petscii();
         key=cgetc();
 }
