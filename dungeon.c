@@ -1024,6 +1024,7 @@ void game_loop() {
 
         case 9:
         case 66:
+        case 130:
         case 45:
             if(keys>0)
             {
