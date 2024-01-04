@@ -2,6 +2,7 @@
 
  cl65 -t pet -v -o dungeonPET.prg dungeon.c && xpet dungeonPET.prg > /dev/null
  cl65 -t c64 -v -o dungeon64.prg dungeon.c && x64sc dungeon64.prg > /dev/null
+ cc dungeon.c -o ~/dungeon -lncurses
 
 */
 
@@ -19,23 +20,24 @@
 #if defined __CBM__
     #include <cbm.h>
     #include <peekpoke.h>
+
+    #define VIC_BASE_RAM			(0x8000)
+    #define SCREEN_RAM				((char*)VIC_BASE_RAM+0x0400)
+    #define CHARMAP_RAM				((char*)VIC_BASE_RAM+0x0800)
+    #define SCREEN_WIDTH			40
+    #define SCREEN_HEIGHT			25
+    #define COLOR_OFFSET			(int)(COLOUR_RAM - SCREEN_RAM)
+    #define CHARS_RAM			    0x80
+    #define CHAR_SPACE				0x20
+    #define RAM_BLOCK				(CHARS_RAM + CHAR_SPACE)
+    #define CHARMAP_DEST			(RAM_BLOCK + 1)
 #endif
+#else
+    #include "notconio.h"
 #endif
 
 
-
-#define VIC_BASE_RAM			(0x8000)
-#define SCREEN_RAM				((char*)VIC_BASE_RAM+0x0400)
-#define CHARMAP_RAM				((char*)VIC_BASE_RAM+0x0800)
-#define SCREEN_WIDTH			40
-#define SCREEN_HEIGHT			25
-#define COLOR_OFFSET			(int)(COLOUR_RAM - SCREEN_RAM)
-#define CHARS_RAM			    0x80
-#define CHAR_SPACE				0x20
-#define RAM_BLOCK				(CHARS_RAM + CHAR_SPACE)
-#define CHARMAP_DEST			(RAM_BLOCK + 1)
-
-// Global key variable
+// Global variables due to CC65 not liking local
 bool run=true;
 bool in_play=false;
 bool obstruction=false;
@@ -46,6 +48,8 @@ unsigned char y=8;
 unsigned char old_x, old_y, direction_x, direction_y, fx, fy;
 unsigned char room=0;
 unsigned char buffer [sizeof(int)*8+1];
+char output [256];
+
 
 // Player 
 unsigned char keys,idols,potion=0;
@@ -516,6 +520,23 @@ unsigned char rooms[] = {
 
 };
 
+#if defined (__CC65__)
+
+    void output_message() {
+
+        printf(output);
+        sprintf(output,"");
+    }
+
+#else
+
+    void output_message() {
+        printw(output);
+        sprintf(output,"");
+    }
+
+#endif
+
 unsigned char game_map[1000];
 
 unsigned int map(char x, char y) {
@@ -536,12 +557,14 @@ unsigned int map(char x, char y) {
     // return 40*y+x;
 }
 
+
 void load_room() {
     int pos;
 
     clrscr();
     gotoxy(0,0);
-    printf("loading room %d",room+1);
+    sprintf(output, "loading room %d",room+1);
+    output_message();
 
     for (pos = 0; pos < 1000; pos++) {   
 
@@ -597,10 +620,10 @@ void load_room() {
     }
     
     /*
-    printf("\n\nenemies %3d\n", enemy_count);
+    sprintf(output, "\n\nenemies %3d\n", enemy_count);
     for(i=1; i<enemy_count+1;i++)
     {
-        printf("%s %3d\n",enemies[i].tile,i);
+        sprintf(output, "%s %3d\n",enemies[i].tile,i);
     }
 
     key = cgetc();      
@@ -622,7 +645,7 @@ unsigned int dumb_wait(unsigned int delay) {
 }
 
 // Returns the enemy for a given x,y coord
-unsigned int which_enemy(ex,ey) {
+unsigned int which_enemy(unsigned int ex,unsigned int ey) {
 
     if(map(ex,ey)==32) return 0;
 
@@ -639,7 +662,7 @@ unsigned int which_enemy(ex,ey) {
 }
 
 
-void attack(weapon, ax, ay)
+void attack(unsigned int weapon, unsigned int ax, unsigned int ay)
 {
     int rnum = 0;
     this_enemy = 0;
@@ -657,7 +680,9 @@ void attack(weapon, ax, ay)
         if(enemies[this_enemy].health>0) 
         {
             gotoxy(0,0);
-            printf("hit!! enemy health: %3d    ", enemies[this_enemy].health);
+            
+            sprintf(output, "hit!! enemy health: %3d    ", enemies[this_enemy].health);
+            output_message();
             timer=dumb_wait(1000);
         }
 
@@ -665,7 +690,9 @@ void attack(weapon, ax, ay)
         
     } else {
         gotoxy(0,0);
-        printf("miss! enemy health: %3d    ", enemies[this_enemy].health);
+
+        sprintf(output, "miss! enemy health: %3d    ", enemies[this_enemy].health);
+        output_message();
         if((x == ax && y == ay)||(x == ax && (y == ay + 1 || y == ay - 1)) || (y == ay && (x == ax + 1 || x == ax - 1))) 
         {
             health -= enemies[this_enemy].strength;
@@ -677,8 +704,8 @@ void attack(weapon, ax, ay)
 
         // Success!
         gotoxy(0,0);
-        printf("enemy defeated!                      ");
-        
+        sprintf(output, "enemy defeated!                      ");
+        output_message();
         // Draw tile in new location
         cputcxy(ax,ay,32); 
         set_map(ax,ay,32);
@@ -691,7 +718,7 @@ void attack(weapon, ax, ay)
 
 }
 
-void enemy_attack(this_enemy)
+void enemy_attack(unsigned int this_enemy)
 {
     int rnum = 0;
     rnum = (rand() % (20 - 1 + 1)) + 1; 
@@ -707,7 +734,8 @@ void enemy_attack(this_enemy)
             health-=enemies[this_enemy].strength;
         }    
         gotoxy(0,0);
-        printf("ouch! health: %3d        ", health);
+        sprintf(output, "ouch! health: %3d        ", health);
+        output_message();
         timer=dumb_wait(1000);
 
         
@@ -720,11 +748,12 @@ void enemy_attack(this_enemy)
                 set_map(enemies[this_enemy].x,enemies[this_enemy].y,32);
                 enemies[this_enemy].tile = 32;
                 gotoxy(0,0);
-                printf("enemy defeated!            ");
-                
+                sprintf(output, "enemy defeated!            ");
+                output_message();
             }else {
                 gotoxy(0,0);
-                printf("block health: %3d      ", health);}
+                sprintf(output, "block health: %3d      ", health);}
+                output_message();
         }
         
         timer=dumb_wait(1000);
@@ -734,7 +763,8 @@ void enemy_attack(this_enemy)
 
         // Fail!
         gotoxy(0,0);
-        printf("enemy defeated you!                  ");
+        sprintf(output, "enemy defeated you!                  ");
+        output_message();
         health = 0;
         timer=dumb_wait(1000);
     }
@@ -804,7 +834,7 @@ void draw_screen() {
 
 
 
-void draw_momentary_object(obj_old_x, obj_old_y, obj_x, obj_y, obj_tile, delay) {
+void draw_momentary_object(unsigned int obj_old_x, unsigned int obj_old_y,unsigned int  obj_x, unsigned int obj_y, unsigned int obj_tile, unsigned int delay) {
 
     // Replace tile
     cputcxy(obj_old_x,obj_old_y,map(obj_old_x,obj_old_y));
@@ -845,15 +875,18 @@ void title_screen() {
     }
 
     gotoxy(0,9);
-    printf("    a game by retrogamecoders.com\n             press a key");
+    sprintf(output, "    a game by retrogamecoders.com\n             press a key");
+    output_message();
 
     while(kbhit()==false){
       timer=dumb_wait(1500);
       gotoxy(13,10);  
-      printf("%cpress a key",18);  
+      sprintf(output, "%cpress a key",18);  
+      output_message();
       timer=dumb_wait(1500);
       gotoxy(13,10);  
-      printf("%cpress a key",146);    
+      sprintf(output, "%cpress a key",146);    
+      output_message();
     };
     
     in_play=true;
@@ -881,10 +914,12 @@ void title_screen() {
 
     while(!kbhit()) {
         gotoxy(0,9);
-        printf("    a game by retrogamecoders.com\n             press a key");
+        sprintf(output, "    a game by retrogamecoders.com\n             press a key");
+        output_message();
         delay = dumb_wait(2000);
         gotoxy(0,9);
-        printf("    a game by retrogamecoders.com\n             %cpress a key%c",18,146);
+        sprintf(output, "    a game by retrogamecoders.com\n             %cpress a key%c",18,146);
+        output_message();
         delay = dumb_wait(2000);
     }
 
@@ -892,11 +927,14 @@ void title_screen() {
 }
 
 #else
+
+// This is the default title screen
 void title_screen() {
     
     clrscr();
-    gotoxy(0,9);
-    printf("    a game by retrogamecoders.com\n             press a key");
+    mvprintw(9,0,"ASCII Dungeon\na game by retrogamecoders.com\n");
+    mvprintw(11,0,"\nPRESS A KEY\n");
+    refresh();
     key=cgetc();
     in_play=true;
 }
@@ -904,11 +942,14 @@ void title_screen() {
 
 bool game_over() {
     clrscr();
-    printf("game over\n\n");
+    sprintf(output, "game over\n\n");
+    output_message();
     timer=dumb_wait(1000);
-    printf("ah, such a shame,\nyou were doing so well!\n\n");
+    sprintf(output, "ah, such a shame,\nyou were doing so well!\n\n");
+    output_message();
     timer=dumb_wait(1000);
-    printf("score:%03d\n\nplay again (y/n)?",score);
+    sprintf(output, "score:%03d\n\nplay again (y/n)?",score);
+    output_message();
     key=cgetc();
     in_play=false;
     if(key=='n') {
@@ -921,7 +962,8 @@ bool game_over() {
 void game_loop() {
 
     gotoxy(0,24);
-    printf(" k: %02d S: %03d *: %03d score: %04d", keys,health, magic, score);
+    sprintf(output, " k: %02d S: %03d *: %03d score: %04d", keys, health, magic, score);
+    output_message();
 
     // Change direction
     if(x != old_x || y != old_y) {
@@ -997,14 +1039,14 @@ void game_loop() {
             default:
                 // Figure out scan codes 
                 //gotoxy(0,0);
-                //printf("%d",key);
+                //sprintf(output, "%d",key);
                 break; 
         }
     //} Remove comment to make more action than turn-based
 
     gotoxy(0,0);
-    printf("                              ");
-
+    sprintf(output, "                              ");
+    output_message();
 
     // Anything in our path?
     obstruction=false;
@@ -1118,7 +1160,7 @@ void game_loop() {
             if(c!=32) {
                 // Figure out what the code is for tile
                 //gotoxy(0,0);
-                //printf("bumped into ...... %03d",c);
+                //sprintf(output, "bumped into ...... %03d",c);
                 obstruction=true;
             }
             
@@ -1214,7 +1256,8 @@ int main() {
 
     }
     clrscr();
-    printf("goodbye!\n\n");
+    sprintf(output, "goodbye!\n\n");
+    output_message();
     cursor(1);
     return(0);
 }
