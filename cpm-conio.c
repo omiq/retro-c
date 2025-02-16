@@ -1,6 +1,9 @@
 /*
 	Requires console compatiblity 
 	zcc +cpm -o cpm-conio.com -subtype=z80pack -create-app cpm-conio.c --generic-console -pragma-define:CONSOLE_COLUMNS=80 -pragma-define:CONSOLE_ROWS=24
+
+	vio zcc +cpm -o cpm-conio.com -subtype=z80pack -create-app cpm-conio.c --generic-console -pragma-define:CONSOLE_COLUMNS=80 -pragma-define:CONSOLE_ROWS=24 --vio
+
 */
 #include <stdio.h>
 #include <conio.h>
@@ -10,11 +13,13 @@ int key;
 char x,y=10;
 int main()
 {
+
+    /* Cursor off */ 
+    printf("\e[1;1H\e[?25l");
+
     /* Clear Screen */
     clrscr();
 
-    // Cursor off 
-    printf("\033[?25l");
 
     /* Loop until Q is pressed */
     while ((key  = toupper(cgetc())) != 'Q')
@@ -50,7 +55,7 @@ int main()
     }
     
     // Cursor on
-    printf("\033[?25h");
+    printf("\e[?25h");
     return(0);
 }
 
