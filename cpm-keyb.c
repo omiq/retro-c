@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <cpm.h>
 
 /* BDOS function codes */
 #define CONSOLE_STATUS 0x0B
