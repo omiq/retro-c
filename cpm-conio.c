@@ -10,8 +10,12 @@ int key;
 char x,y=10;
 int main()
 {
-	/* Clear Screen */
-	clrscr();
+    /* Clear Screen */
+    clrscr();
+
+    // Cursor off 
+    printf("\033[?25l");
+
     /* Loop until Q is pressed */
     while ((key  = toupper(cgetc())) != 'Q')
     {
@@ -44,7 +48,9 @@ int main()
         putch('@');
     
     }
-    //cursor(1);
+    
+    // Cursor on
+    printf("\033[?25h");
     return(0);
 }
 
