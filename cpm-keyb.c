@@ -14,15 +14,22 @@ void main() {
 
             /* Character available - read it */
             ch = bdos(CONSOLE_INPUT, 0xFF);
-            printf("Key pressed: %c\n", ch);
-            if (ch == 'q') {
-                break;
-            }
-        } else {
 
-            /* No key available - continue with other tasks */
-            printf("No key pressed, doing other work...\n");
-        }
+            if (ch == 'q' || ch == 'Q') {
+		break;
+
+            } else if (ch>32) {
+
+		printf("Key pressed: %c\n", ch);
+
+            } else {
+
+	        /* No key available - continue with other tasks */
+        	printf(".");
+	   }
+        } else {
+	    printf("Waiting for a key ...\n");
+	}
     }
 
     return;
