@@ -3,9 +3,19 @@
   copy to host OS with srctools/cpmr.sh -t c 0:game.c
   (copy while translating text file from drive c, user area 0, the file game.c
 
+  When using desktop CPM emulator and Z88DK this works
+  zcc +cpm -o GAME.COM cpm-game.c
+
+**/
+
+
+/**
+
+  copy to host OS with srctools/cpmr.sh -t c 0:game.c
+  (copy while translating text file from drive c, user area 0, the file game.c
+
 **/
 #include <stdio.h>
-#include <conio.h>
 
 char x=10;
 char y=10;
@@ -53,9 +63,9 @@ void main() {
           if(x<2 || x>38) x=oldx;
           if(y<2 || y>19) y=oldy;
           gotoxy(oldx,oldy);
-          putch(' ');
+          printf(" ");
           gotoxy(x,y);
-          putch('@');
+          printf("@");
           gotoxy(0,0);
           printf("%02d,%02d",x,y);
           c=getch();
