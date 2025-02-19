@@ -7,14 +7,6 @@
   zcc +cpm -o GAME.COM cpm-game.c
 
 **/
-
-
-/**
-
-  copy to host OS with srctools/cpmr.sh -t c 0:game.c
-  (copy while translating text file from drive c, user area 0, the file game.c
-
-**/
 #include <stdio.h>
 
 char x=10;
