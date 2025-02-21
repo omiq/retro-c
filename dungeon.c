@@ -527,14 +527,14 @@ unsigned char rooms[] = {
     void output_message() {
 
         printf(output);
-        sprintf(output,"");
+        output[0] = '\0';
     }
 
 #else
 
     void output_message() {
-        printw(output);
-        sprintf(output,"");
+        printw("%s", output);
+        output[0] = '\0';
     }
 
 #endif
@@ -1161,8 +1161,8 @@ void game_loop() {
             
             if(c!=32) {
                 // Figure out what the code is for tile
-                //gotoxy(0,0);
-                //sprintf(output, "bumped into ...... %03d",c);
+                gotoxy(0,0);
+                sprintf(output, "bumped into ...... %03d",c);
                 obstruction=true;
             }
             
