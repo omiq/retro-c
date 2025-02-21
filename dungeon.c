@@ -4,6 +4,8 @@
  cl65 -t c64 -v -o dungeon64.prg dungeon.c && x64sc dungeon64.prg > /dev/null
  cc dungeon.c -o ~/dungeon -lncurses
 
+ install ncurses: sudo apt-get install libncurses-dev
+
 */
 
 #include <stdio.h>
