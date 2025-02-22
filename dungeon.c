@@ -141,7 +141,7 @@ void load_room() {
         }
 
         // Goblin
-        if(c==38) {
+        if(c=='G') {
 
             // Increment for next enemy (Enemy 0 is counted as no enemy)
             enemy_count+=1;
@@ -161,7 +161,7 @@ void load_room() {
         }  
 
         // Rat
-        else if (c==94) {
+        else if (c=='R') {
 
             // Increment for next enemy (Enemy 0 is counted as no enemy)
             enemy_count+=1;
@@ -350,7 +350,7 @@ void move_enemies() {
             enemies[i].old_y = enemies[i].y; 
             
             // Rat is random
-            if(enemies[i].tile == 158) {
+            if(enemies[i].tile == 'R') {
                 rnd = (rand() % (4)) + 1; 
                 if(rnd == 4) enemies[i].x-=1;
                 if(rnd == 2) enemies[i].x+=1;
@@ -359,7 +359,7 @@ void move_enemies() {
             }
 
             // Gobbo goes for player
-            if(enemies[i].tile == 38) {
+            if(enemies[i].tile == 'G') {
                 if(enemies[i].x > x) enemies[i].x-=1;
                 if(enemies[i].x < x) enemies[i].x+=1;
                 if(enemies[i].y > y) enemies[i].y-=1;
@@ -558,20 +558,18 @@ void game_loop() {
     // Collision
     switch (c)
     {
-        case 166:
+        case '#':
             // Wall               
             obstruction=true;
             break;
         
-        case 37:
-        case 11: // Key +1
+
+        case 'K': // Key +1
             keys+=1;
             break;
 
-        case 9:
-        case 66:
-        case 130:
-        case 45:
+        // Door
+        case '+':
             if(keys>0)
             {
                 keys-=1;
@@ -581,13 +579,13 @@ void game_loop() {
             }else{
 
                 // Not enough keys to unlock!
-                set_map(x, y, 28); // turn into partially open
+                set_map(x, y, '-'); // turn into partially open
                 health-=10; // lose 10 health
                 obstruction=true;
             }
             break;
 
-        case 28: // Partially open door
+        case '-': // Partially open door
 
             if(keys>0)
             {
@@ -603,24 +601,24 @@ void game_loop() {
             }
             break;
 
-        case 30: // Sword!
+        case '/': // Sword!
             sword=true;
             break;
 
-        case 36: // Cash money
+        case '$': // Cash money
             score+=5;
             break;
 
-        case 145: // Potion
+        case 'P': // Potion
             score+=15;
             magic+=100;
             break;
 
-        case 154: // Cash money
+        case 'M': // Cash money
             score+=15;
             break;
 
-        case 147: // Health
+        case 'H': // Health
             health+=25;
             if(health>100) health=100; // Can't be more than 100%!
             break;
@@ -628,20 +626,19 @@ void game_loop() {
 
 /* Enemies >> */
 
-        case 38: // Gobbo
+        case 'G': // Gobbo
             attack(5,x,y);
             obstruction=true;
             break;
 
-        case 158: // Rats
-        case 222:
+        case 'R': // Rats
             attack(5,x,y);
             obstruction=true;
             break;
 
 /* ^^ Enemies */
 
-        case 152: // Idol
+        case 'I': // Idol
             score+=10;
             idols+=1;
             if(idols==2) {
