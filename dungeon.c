@@ -115,7 +115,6 @@ unsigned int map(char x, char y) {
     unsigned char c;
 
     c = game_map[40*y+x];
-    if(c>64)c+=64;
     return c;
   
 
@@ -123,21 +122,22 @@ unsigned int map(char x, char y) {
 
 
 void load_room() {
-    int pos;
+    int pos=0;
 
     clrscr();
     gotoxy(0,0);
     sprintf(output, "loading room %d",room+1);
     output_message();
 
-    for (pos = 0; pos < 1000; pos++) {   
-
-        c=rooms[pos+(1000*room)];
+    for (int this_row = 0; this_row < 24; this_row++) {  
+        for(int this_col = 0; this_col < 40; this_col++) { 
+        
+        c=rooms[room][this_row][this_col];
 
         // Player x and y
         if(c==0) {
-            y=pos/40;
-            x=pos % 40;
+            y=this_row;
+            x=this_col;
         }
 
         // Goblin
@@ -149,8 +149,8 @@ void load_room() {
             // Create the enemy in the list
             enemies[enemy_count].tile = c;
             enemies[enemy_count].room = room;
-            enemies[enemy_count].x = pos % 40;
-            enemies[enemy_count].y = pos/40;
+            enemies[enemy_count].x = this_col;
+            enemies[enemy_count].y = this_row;
             enemies[enemy_count].old_x = enemies[enemy_count].x;
             enemies[enemy_count].old_y = enemies[enemy_count].y;
             enemies[enemy_count].health = 30;
@@ -169,8 +169,8 @@ void load_room() {
             // Create the enemy in the list
             enemies[enemy_count].tile = 158;
             enemies[enemy_count].room = room;
-            enemies[enemy_count].x = pos % 40;
-            enemies[enemy_count].y = pos/40;
+            enemies[enemy_count].x = this_col;
+            enemies[enemy_count].y = this_row;
             enemies[enemy_count].old_x = enemies[enemy_count].x;
             enemies[enemy_count].old_y = enemies[enemy_count].y;
             enemies[enemy_count].health = 15;
@@ -179,8 +179,10 @@ void load_room() {
             enemies[enemy_count].armour = 0;
 
         }  
-
-        game_map[pos] = c;     
+        if(c=='.') c=32;
+        game_map[pos] = c;   
+        pos++;  
+        }
     }
     
     /*
