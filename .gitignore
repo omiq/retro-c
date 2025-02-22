@@ -25,3 +25,4 @@ hello.build/static_src/MainProgram.c
 hello.build/static_src/MainProgram.o
 hello.o
 dungeon.o
+.DS_Store
