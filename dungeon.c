@@ -135,7 +135,7 @@ void load_room() {
         c=rooms[room][this_row][this_col];
 
         // Player x and y
-        if(c==0) {
+        if(c=='@') {
             y=this_row;
             x=this_col;
         }
@@ -167,7 +167,7 @@ void load_room() {
             enemy_count+=1;
 
             // Create the enemy in the list
-            enemies[enemy_count].tile = 158;
+            enemies[enemy_count].tile = c;
             enemies[enemy_count].room = room;
             enemies[enemy_count].x = this_col;
             enemies[enemy_count].y = this_row;
