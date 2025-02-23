@@ -109,6 +109,7 @@ void load_room() {
     placeObject('*');
     placeObject('/');
     placeObject('$');
+    placeObject('H');
 
     clrscr();
     gotoxy(0,0);
