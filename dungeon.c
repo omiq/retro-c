@@ -110,11 +110,14 @@ void load_room() {
     placeObject('/');
     placeObject('$');
     placeObject('H');
+    placeObject('K');
+
 
     clrscr();
     gotoxy(0,0);
-    sprintf(output, "loading room %d",room+1);
+    sprintf(output, "loading room %d",room);
     output_message();
+   
 
     for (int this_row = 0; this_row < 24; this_row++) {  
         for(int this_col = 0; this_col < 40; this_col++) { 
@@ -382,9 +385,9 @@ void move_enemies() {
 void draw_screen() {
 
     int row,col;
-    for(row=0; row<25; row++)
+    for(row=1; row<22; row++)
     {
-        for(col=0; col < 40; col++){
+        for(col=1; col < 38; col++){
             cputcxy(col,row,get_map(col,row));
         }
     };
