@@ -229,3 +229,19 @@ void placePlayer(void) {
              map[row][col+1] != '.');
     map[row][col] = '@';
 }
+
+/* Place the player character '@' in a random valid position within the playable area.
+   The candidate cell must be a '.' with '.' immediately above, below, left, and right. */
+void placeObject(unsigned char tile) {
+    int row, col;
+    do {
+        row = (rand() % (PLAYABLE_HEIGHT - 2)) + HUD_TOP + 1;
+        col = (rand() % (MAP_WIDTH - 2)) + 1;
+    } while (map[row][col] != '.' ||
+             map[row-1][col] != '.' ||
+             map[row+1][col] != '.' ||
+             map[row][col-1] != '.' ||
+             map[row][col+1] != '.');
+    map[row][col] = tile;
+}
+

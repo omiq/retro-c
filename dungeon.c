@@ -27,7 +27,7 @@ unsigned char key,i,c;
 unsigned char x=19;
 unsigned char y=8;
 unsigned char old_x, old_y, direction_x, direction_y, fx, fy;
-unsigned char room=0;
+unsigned char room=1;
 unsigned char buffer [sizeof(int)*8+1];
 char output [256];
 
@@ -100,6 +100,15 @@ void load_room() {
     srand((unsigned)time(NULL));
     carveMaze();
     placePlayer();
+    placeObject('G');
+
+    // 1 piece of idol per room level
+    for(i=0; i<room; i++) placeObject('I');
+    
+    placeObject('R');
+    placeObject('*');
+    placeObject('/');
+    placeObject('$');
 
     clrscr();
     gotoxy(0,0);
@@ -594,7 +603,7 @@ void game_loop() {
             score+=5;
             break;
 
-        case 'P': // Potion
+        case '*': // Potion
             score+=15;
             magic+=100;
             break;
@@ -626,7 +635,7 @@ void game_loop() {
         case 'I': // Idol
             score+=10;
             idols+=1;
-            if(idols==2) {
+            if(idols==room) {
                 room+=1;
                 load_room();
                 draw_screen();
@@ -696,7 +705,7 @@ int main() {
             health=100;
             score=0;
             keys=0;
-            room=0;
+            room=1;
             potion=0;
             magic=0;
             enemy_count=0;
