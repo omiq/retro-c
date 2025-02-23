@@ -23,7 +23,7 @@ bool run=true;
 bool in_play=false;
 bool obstruction=false;
 unsigned int timer,delay;
-unsigned int key,i,c;
+unsigned char key,i,c;
 unsigned char x=19;
 unsigned char y=8;
 unsigned char old_x, old_y, direction_x, direction_y, fx, fy;
@@ -62,7 +62,7 @@ struct enemy enemies[1000];
 unsigned char title_screen_data[] = {};
 
 
-#include "map.h"
+#include "maze.h"
 
 #if defined (__CC65__)
 
@@ -83,7 +83,7 @@ unsigned char title_screen_data[] = {};
 
 unsigned char game_map[1000];
 
-unsigned int map(char x, char y) {
+unsigned char get_map(char x, char y) {
     
     unsigned char c;
 
@@ -97,6 +97,10 @@ unsigned int map(char x, char y) {
 void load_room() {
     int pos=0;
 
+    srand((unsigned)time(NULL));
+    carveMaze();
+    placePlayer();
+
     clrscr();
     gotoxy(0,0);
     sprintf(output, "loading room %d",room+1);
@@ -105,7 +109,7 @@ void load_room() {
     for (int this_row = 0; this_row < 24; this_row++) {  
         for(int this_col = 0; this_col < 40; this_col++) { 
         
-        c=rooms[room][this_row][this_col];
+        c=map[this_row][this_col];
 
         // Player x and y
         if(c=='@') {
@@ -192,7 +196,7 @@ unsigned int dumb_wait(unsigned int delay) {
 // Returns the enemy for a given x,y coord
 unsigned int which_enemy(unsigned int ex,unsigned int ey) {
 
-    if(map(ex,ey)==32) return 0;
+    if(get_map(ex,ey)==32) return 0;
 
     // Enemies starts at 1, 0 = no enemy
     for(i=1;i<enemy_count+1;i++)
@@ -348,7 +352,7 @@ void move_enemies() {
             }
 
             // Redraw
-            c=map(enemies[i].x,enemies[i].y);
+            c=get_map(enemies[i].x,enemies[i].y);
             if(c!=32) {
                 enemies[i].x = enemies[i].old_x;
                 enemies[i].y = enemies[i].old_y;
@@ -371,7 +375,7 @@ void draw_screen() {
     for(row=0; row<25; row++)
     {
         for(col=0; col < 40; col++){
-            cputcxy(col,row,map(col,row));
+            cputcxy(col,row,get_map(col,row));
         }
     };
 
@@ -382,7 +386,7 @@ void draw_screen() {
 void draw_momentary_object(unsigned int obj_old_x, unsigned int obj_old_y,unsigned int  obj_x, unsigned int obj_y, unsigned int obj_tile, unsigned int delay) {
 
     // Replace tile
-    cputcxy(obj_old_x,obj_old_y,map(obj_old_x,obj_old_y));
+    cputcxy(obj_old_x,obj_old_y,get_map(obj_old_x,obj_old_y));
 
     // Draw tile in new location
     cputcxy(obj_x,obj_y,obj_tile); 
@@ -391,7 +395,7 @@ void draw_momentary_object(unsigned int obj_old_x, unsigned int obj_old_y,unsign
     timer=dumb_wait(delay);
 
     // Replace tile again
-    cputcxy(obj_x,obj_y,map(obj_x,obj_y));
+    cputcxy(obj_x,obj_y,get_map(obj_x,obj_y));
     
 }
 
@@ -404,7 +408,7 @@ void draw_move(bool replace) {
     }
 
     // Draw new location
-    cputcxy(old_x,old_y,map(old_x,old_y));
+    cputcxy(old_x,old_y,get_map(old_x,old_y));
     cputcxy(x,y,64); 
     set_map(x, y, 64);
 }
@@ -502,13 +506,13 @@ void game_loop() {
                     fx = x+direction_x;
                     fy = y+direction_y;  
 
-                    c=map(fx,fy);
+                    c=get_map(fx,fy);
                     while(c==32 && magic > 0) {             
                         draw_momentary_object(fx,fy,fx,fy,'*',200); 
                         magic-=1;
                         fx = fx+direction_x;
                         fy = fy+direction_y;    
-                        c=map(fx,fy);
+                        c=get_map(fx,fy);
                     }
 
                     attack(10,fx,fy);
@@ -534,7 +538,7 @@ void game_loop() {
 
     // Anything in our path?
     obstruction=false;
-    c=map(x,y);
+    c=get_map(x,y);
     
     // Collision
     switch (c)
