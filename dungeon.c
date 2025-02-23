@@ -15,7 +15,6 @@ conversions will then use header files and definitions
 #include <stdbool.h>
 #include <unistd.h>
 #include <string.h>
-
 #include "notconio.h"
 
 
