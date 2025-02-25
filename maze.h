@@ -4,7 +4,7 @@
 #if defined (__CC65__)
 typedef unsigned long time_t;
 time_t time(time_t* t) {
-    return 100000000;
+    return rand() % (100000000);
 }
 
 

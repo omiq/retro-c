@@ -613,7 +613,7 @@ void game_loop() {
     //} Remove comment to make more action than turn-based
 
     gotoxy(0,info_row);
-    sprintf(output, "                              ");
+    sprintf(output, "                                                ");
     output_message();
 
     // Anything in our path?
