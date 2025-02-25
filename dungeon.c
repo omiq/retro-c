@@ -123,7 +123,7 @@ unsigned char title_screen_data[] = {};
     void output_message() {
 
         printf(output);
-        output[0] = '\0';
+        output[0] = "\0";
     }
 
 
@@ -148,6 +148,7 @@ unsigned char get_map(char x, char y) {
     unsigned char c;
 
     c = game_map[40*y+x];
+    if(c==0) {return ' ';}
     return c;
   
 
@@ -229,7 +230,7 @@ void load_room() {
             enemies[enemy_count].armour = 0;
 
         }  
-        if(c=='.') c=32;
+        if(c=='.') c=' ';
         game_map[pos] = c;   
         pos++;  
         }
@@ -260,7 +261,7 @@ void set_map(char x, char y, int tile) {
 // Returns the enemy for a given x,y coord
 unsigned int which_enemy(unsigned int ex,unsigned int ey) {
 
-    if(get_map(ex,ey)==32) return 0;
+    if(get_map(ex,ey)==' ') return 0;
 
     // Enemies starts at 1, 0 = no enemy
     for(i=1;i<enemy_count+1;i++)
@@ -320,9 +321,9 @@ void attack(unsigned int weapon, unsigned int ax, unsigned int ay)
         sprintf(output, "enemy defeated!                      ");
         output_message();
         // Draw tile in new location
-        cputcxy(ax,ay,32); 
-        set_map(ax,ay,32);
-        enemies[this_enemy].tile = 32;
+        cputcxy(ax,ay,' '); 
+        set_map(ax,ay,' ');
+        enemies[this_enemy].tile = ' ';
 
         // Up the score
         score+=10;
@@ -357,9 +358,9 @@ void enemy_attack(unsigned int this_enemy)
             if(enemies[this_enemy].health<1) {
                enemies[this_enemy].health=0;
                 // Draw tile in new location
-                cputcxy(enemies[this_enemy].x,enemies[this_enemy].y,32); 
-                set_map(enemies[this_enemy].x,enemies[this_enemy].y,32);
-                enemies[this_enemy].tile = 32;
+                cputcxy(enemies[this_enemy].x,enemies[this_enemy].y,' '); 
+                set_map(enemies[this_enemy].x,enemies[this_enemy].y,' ');
+                enemies[this_enemy].tile = ' ';
                 gotoxy(0,info_row);
                 sprintf(output, "enemy defeated!            ");
                 output_message();
@@ -417,13 +418,13 @@ void move_enemies() {
 
             // Redraw
             c=get_map(enemies[i].x,enemies[i].y);
-            if(c!=32) {
+            if(c!=' ') {
                 enemies[i].x = enemies[i].old_x;
                 enemies[i].y = enemies[i].old_y;
-                if(c==64) enemy_attack(i);
+                if(c=='@') enemy_attack(i);
             }else{
-                set_map(enemies[i].old_x, enemies[i].old_y, 32);
-                cputcxy(enemies[i].old_x, enemies[i].old_y, 32);
+                set_map(enemies[i].old_x, enemies[i].old_y, ' ');
+                cputcxy(enemies[i].old_x, enemies[i].old_y, ' ');
             }
             set_map(enemies[i].x, enemies[i].y, enemies[i].tile);
             cputcxy(enemies[i].x, enemies[i].y,enemies[i].tile);
@@ -468,7 +469,7 @@ void draw_move(bool replace) {
 
     // Delete the player character
     if(!replace) {
-        set_map(old_x, old_y, 32);
+        set_map(old_x, old_y, ' ');
     }
 
     // Draw new location
@@ -557,7 +558,7 @@ unsigned char get_key() {
                     fy = player_y+direction_y;  
 
                     c=get_map(fx,fy);
-                    while(c==32 && magic > 0) {             
+                    while(c==' ' && magic > 0) {             
                         draw_momentary_object(fx,fy,fx,fy,'*',200); 
                         magic-=1;
                         fx = fx+direction_x;
@@ -659,7 +660,7 @@ void game_loop() {
 
             }else{
                 // Not enough keys to unlock!
-                set_map(player_x, player_y, 32);  // turn into fully open
+                set_map(player_x, player_y, ' ');  // turn into fully open
                 health-=10;         // lose 10 health
                 obstruction=true;
             }
@@ -721,7 +722,7 @@ void game_loop() {
             
             // convert integer to ascii: itoa(c,buffer,10);
             
-            if(c!=32) {
+            if(c!=' ') {
                 // Figure out what the code is for tile
                 gotoxy(0,0);
                 sprintf(output, "bumped into ...... %03d",c);
