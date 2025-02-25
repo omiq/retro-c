@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <ncurses.h>
 
-
 /* Turn on/off the cursor */
 void cursor(char onoff) {
     curs_set(onoff);

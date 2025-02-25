@@ -15,7 +15,7 @@ conversions will then use header files and definitions
 #include <stdbool.h>
 #include <unistd.h>
 #include <string.h>
-#include "notconio.h"
+//#include "notconio.h"
 
 
 // Global variables due to CC65 not liking local
@@ -73,6 +73,69 @@ unsigned char title_screen_data[] = {};
     }
 
 #else
+
+
+
+    void gotoxy(unsigned char x, unsigned char y) {
+        printf("\e[%d;%dH", x, y); //	Move the cursor to x, y coordinate
+
+    }
+
+    void cursor(bool on) {
+        if(!on) { printf("\e[?25l"); } else //	Hide the cursor
+        { printf("\e[?25h"); } //	Show the cursor.
+
+    }
+
+    /* Put char at coordinate */
+    void cputcxy(unsigned int x, unsigned int y, unsigned char outString)
+    {
+        gotoxy(x,y);
+        printf("%c", outString);
+        
+    }
+
+    void printw(char* fmt, char* str) {
+        printf(fmt, str);
+    }
+
+    void mvprintw(unsigned char y, unsigned char x, char* str) {
+        gotoxy(x,y);
+        printw("%s", str);
+    }
+
+
+    void clrscr() {
+
+        printf("\e[2J"); //	Clears the window/terminal
+        gotoxy(x,y);
+    }
+
+
+    void refresh() {
+        gotoxy(x,y);
+        return;
+    }
+
+    /* Get key input     */
+    /* requires stdlib.h */
+    
+    int getch()
+    {
+        char ch;
+        system("stty raw -echo");
+        ch=getchar();
+        system("stty -raw echo");
+        return ch;
+    }
+    
+
+    int cgetc() {
+        return getch();
+    }
+    
+
+
 
     void output_message() {
         printw("%s", output);
