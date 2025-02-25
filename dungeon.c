@@ -22,6 +22,7 @@ conversions will then use header files and definitions
 bool run=true;
 bool in_play=false;
 bool obstruction=false;
+unsigned char info_row = 23;
 unsigned int timer,delay;
 unsigned char key,i,c;
 unsigned char player_x=19;
@@ -176,7 +177,7 @@ void load_room() {
 
 
     clrscr();
-    gotoxy(0,0);
+    gotoxy(0,info_row);
     sprintf(output, "loading room %d",room);
     output_message();
    
@@ -306,7 +307,7 @@ void attack(unsigned int weapon, unsigned int ax, unsigned int ay)
         enemies[this_enemy].health-=weapon;
         if(enemies[this_enemy].health>0) 
         {
-            gotoxy(0,0);
+            gotoxy(0,info_row);
             
             sprintf(output, "hit!! enemy health: %3d    ", enemies[this_enemy].health);
             output_message();
@@ -316,7 +317,7 @@ void attack(unsigned int weapon, unsigned int ax, unsigned int ay)
 
         
     } else {
-        gotoxy(0,0);
+        gotoxy(0,info_row);
 
         sprintf(output, "miss! enemy health: %3d    ", enemies[this_enemy].health);
         output_message();
@@ -330,7 +331,7 @@ void attack(unsigned int weapon, unsigned int ax, unsigned int ay)
     if(enemies[this_enemy].health < 1 ) {
 
         // Success!
-        gotoxy(0,0);
+        gotoxy(0,info_row);
         sprintf(output, "enemy defeated!                      ");
         output_message();
         // Draw tile in new location
@@ -360,7 +361,7 @@ void enemy_attack(unsigned int this_enemy)
         } else {
             health-=enemies[this_enemy].strength;
         }    
-        gotoxy(0,0);
+        gotoxy(0,info_row);
         sprintf(output, "ouch! health: %3d        ", health);
         output_message();
         timer=dumb_wait(1000);
@@ -374,11 +375,11 @@ void enemy_attack(unsigned int this_enemy)
                 cputcxy(enemies[this_enemy].x,enemies[this_enemy].y,32); 
                 set_map(enemies[this_enemy].x,enemies[this_enemy].y,32);
                 enemies[this_enemy].tile = 32;
-                gotoxy(0,0);
+                gotoxy(0,info_row);
                 sprintf(output, "enemy defeated!            ");
                 output_message();
             }else {
-                gotoxy(0,0);
+                gotoxy(0,info_row);
                 sprintf(output, "block health: %3d      ", health);}
                 output_message();
         }
@@ -389,7 +390,7 @@ void enemy_attack(unsigned int this_enemy)
     if(health < 1) {
 
         // Fail!
-        gotoxy(0,0);
+        gotoxy(0,info_row);
         sprintf(output, "enemy defeated you!                  ");
         output_message();
         health = 0;
@@ -592,11 +593,13 @@ unsigned char get_key() {
                 break;
             default:
                 // Figure out scan codes 
-                gotoxy(0,0);
-                printf("%c %d",key, key);
+                /*gotoxy(0,0);
+                printf("%c %d",key, key);*/
                 break; 
         }
 
+        // debounce
+        dumb_wait(100);
 
         return key;
 }
@@ -625,7 +628,7 @@ void game_loop() {
     key = get_key();
     //} Remove comment to make more action than turn-based
 
-    gotoxy(0,0);
+    gotoxy(0,info_row);
     sprintf(output, "                              ");
     output_message();
 
