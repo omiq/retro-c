@@ -11,10 +11,29 @@ conversions will then use header files and definitions
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
+
 #include <stdbool.h>
 #include <unistd.h>
 #include <string.h>
+
+
+// Global variables due to CC65 not liking local
+bool run=true;
+bool in_play=false;
+bool obstruction=false;
+unsigned char info_row = 23;
+unsigned int this_row;
+unsigned int this_col;
+unsigned int timer,delay;
+unsigned char key,i,c;
+unsigned char player_x=19;
+unsigned char player_y=8;
+unsigned char old_x, old_y, direction_x, direction_y, fx, fy;
+unsigned char room=1;
+unsigned char buffer [sizeof(int)*8+1];
+char output [256];
+
+
 #if defined (__CC65__)
 #include<cc65.h>
 #include <conio.h>
@@ -33,27 +52,38 @@ conversions will then use header files and definitions
     #define CHAR_SPACE				0x20
     #define RAM_BLOCK				(CHARS_RAM + CHAR_SPACE)
     #define CHARMAP_DEST			(RAM_BLOCK + 1)
+
+
+unsigned int dumb_wait(unsigned int delay) {
+    for(timer=0; timer<delay; timer++) {}
+    return timer;
+}
+
+
+
 #endif
 #else
     #include "notconio.h"
+    #include <time.h>
+
+
+    unsigned int dumb_wait(unsigned int delay) {
+   
+
+    // Storing start time
+    clock_t start_time = clock();
+    int counter = 0;
+    // looping till required time is not achieved
+    while (clock() < start_time + delay*250)
+        gotoxy(0,0);
+        counter++;
+        //printf("%d",counter);
+        ;
+    return delay;
+}
+
 #endif
 
-
-// Global variables due to CC65 not liking local
-bool run=true;
-bool in_play=false;
-bool obstruction=false;
-unsigned char info_row = 23;
-unsigned int this_row;
-unsigned int this_col;
-unsigned int timer,delay;
-unsigned char key,i,c;
-unsigned char player_x=19;
-unsigned char player_y=8;
-unsigned char old_x, old_y, direction_x, direction_y, fx, fy;
-unsigned char room=1;
-unsigned char buffer [sizeof(int)*8+1];
-char output [256];
 
 
 // Player 
@@ -225,20 +255,7 @@ void set_map(char x, char y, int tile) {
 
 
 
-unsigned int dumb_wait(unsigned int delay) {
-   
 
-    // Storing start time
-    clock_t start_time = clock();
-    int counter = 0;
-    // looping till required time is not achieved
-    while (clock() < start_time + delay*250)
-        gotoxy(0,0);
-        counter++;
-        //printf("%d",counter);
-        ;
-    return delay;
-}
 
 // Returns the enemy for a given x,y coord
 unsigned int which_enemy(unsigned int ex,unsigned int ey) {
