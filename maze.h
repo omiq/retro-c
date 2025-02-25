@@ -1,13 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef __CC65__
-unsigned long time(int d) {
-    return 1;  /* Or any constant, or even a value read from hardware if available */
+#if defined (__CC65__)
+typedef unsigned long time_t;
+time_t time(time_t* t) {
+    return 100000000;
 }
+
+
 #else
 #include <time.h>
+
 #endif
+
 
 #define MAP_WIDTH 40
 #define MAP_HEIGHT 24
@@ -48,13 +53,15 @@ int stackSize = 0;
 int visited[CELLS_Y][CELLS_X];
 
 /* Push a cell onto the stack */
-void push(Cell c) {
-    stack[stackSize++] = c;
+void push(const Cell *this_cell) {
+    stack[stackSize] = *this_cell;
+    stackSize++;
 }
 
 /* Pop a cell from the stack */
-Cell pop(void) {
-    return stack[--stackSize];
+void pop(Cell *out_cell) {
+    stackSize--;
+    *out_cell = stack[stackSize];
 }
 
 /* Check if the stack is empty */
@@ -106,17 +113,17 @@ void carveMaze(void) {
             }
         }
         {
-            Cell c;
-            c.x = startX;
-            c.y = startY;
-            push(c);
+            Cell this_c;
+            this_c.x = startX;
+            this_c.y = startY;
+            push(&this_c);
         }
     }
 
     /* DFS to carve the maze */
     while (!isEmpty()) {
         Cell current;
-        int directions[4];
+        int directions[4];  
         int carved;
         current = stack[stackSize - 1];  /* Peek at the top */
         directions[0] = 0;
@@ -179,16 +186,16 @@ void carveMaze(void) {
             }
             visited[ny][nx] = 1;
             {
-                Cell c;
-                c.x = nx;
-                c.y = ny;
-                push(c);
+                Cell this_c;
+                this_c.x = nx;
+                this_c.y = ny;
+                push(&this_c);
             }
             carved = 1;
             break;
         }
         if (!carved) {
-            pop();
+            pop(&current);
         }
     }
 
