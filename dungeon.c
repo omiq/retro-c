@@ -15,7 +15,28 @@ conversions will then use header files and definitions
 #include <stdbool.h>
 #include <unistd.h>
 #include <string.h>
-//#include "notconio.h"
+#if defined (__CC65__)
+#include<cc65.h>
+#include <conio.h>
+
+#if defined __CBM__
+    #include <cbm.h>
+    #include <peekpoke.h>
+
+    #define VIC_BASE_RAM			(0x8000)
+    #define SCREEN_RAM				((char*)VIC_BASE_RAM+0x0400)
+    #define CHARMAP_RAM				((char*)VIC_BASE_RAM+0x0800)
+    #define SCREEN_WIDTH			40
+    #define SCREEN_HEIGHT			25
+    #define COLOR_OFFSET			(int)(COLOUR_RAM - SCREEN_RAM)
+    #define CHARS_RAM			    0x80
+    #define CHAR_SPACE				0x20
+    #define RAM_BLOCK				(CHARS_RAM + CHAR_SPACE)
+    #define CHARMAP_DEST			(RAM_BLOCK + 1)
+#endif
+#else
+    #include "notconio.h"
+#endif
 
 
 // Global variables due to CC65 not liking local
@@ -23,6 +44,8 @@ bool run=true;
 bool in_play=false;
 bool obstruction=false;
 unsigned char info_row = 23;
+unsigned int this_row;
+unsigned int this_col;
 unsigned int timer,delay;
 unsigned char key,i,c;
 unsigned char player_x=19;
@@ -73,15 +96,19 @@ unsigned char title_screen_data[] = {};
         output[0] = '\0';
     }
 
-#endif
 
-#include "notconio.h"
-
-
+#else
     void output_message() {
         printw("%s", output);
         output[0] = '\0';
     }
+
+
+#endif
+
+
+
+
 
 
 unsigned char game_map[1000];
@@ -122,8 +149,8 @@ void load_room() {
     output_message();
    
 
-    for (int this_row = 0; this_row < 24; this_row++) {  
-        for(int this_col = 0; this_col < 40; this_col++) { 
+    for (this_row = 0; this_row < 24; this_row++) {  
+        for(this_col = 0; this_col < 40; this_col++) { 
         
         c=map[this_row][this_col];
 
@@ -440,10 +467,8 @@ void draw_move(bool replace) {
 void title_screen() {
     
     clrscr();
-    mvprintw(9,10,"ASCII Dungeon");
-    mvprintw(12,0,"a game by retrogamecoders.com");
-    mvprintw(15,20,"PRESS A KEY");
-    refresh();
+    sprintf(output, "ASCII Dungeon\na game by retrogamecoders.com\nPRESS A KEY");
+    output_message();
     key=cgetc();
     in_play=true;
 }
