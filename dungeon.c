@@ -24,8 +24,8 @@ bool in_play=false;
 bool obstruction=false;
 unsigned int timer,delay;
 unsigned char key,i,c;
-unsigned char x=19;
-unsigned char y=8;
+unsigned char player_x=19;
+unsigned char player_y=8;
 unsigned char old_x, old_y, direction_x, direction_y, fx, fy;
 unsigned char room=1;
 unsigned char buffer [sizeof(int)*8+1];
@@ -77,7 +77,7 @@ unsigned char title_screen_data[] = {};
 
 
     void gotoxy(unsigned char x, unsigned char y) {
-        printf("\e[%d;%dH", x, y); //	Move the cursor to x, y coordinate
+        printf("\e[%d;%dH", y, x); //	Move the cursor to x, y coordinate
 
     }
 
@@ -91,16 +91,15 @@ unsigned char title_screen_data[] = {};
     void cputcxy(unsigned int x, unsigned int y, unsigned char outString)
     {
         gotoxy(x,y);
-        printf("%c", outString);
-        
+        putchar(outString);
     }
 
     void printw(char* fmt, char* str) {
         printf(fmt, str);
     }
 
-    void mvprintw(unsigned char y, unsigned char x, char* str) {
-        gotoxy(x,y);
+    void mvprintw(unsigned char my, unsigned char mx, char* str) {
+        gotoxy(mx,my);
         printw("%s", str);
     }
 
@@ -108,19 +107,19 @@ unsigned char title_screen_data[] = {};
     void clrscr() {
 
         printf("\e[2J"); //	Clears the window/terminal
-        gotoxy(x,y);
+        gotoxy(0,0);
     }
 
 
     void refresh() {
-        gotoxy(x,y);
+        gotoxy(0,0);
         return;
     }
 
     /* Get key input     */
     /* requires stdlib.h */
     
-    int getch()
+    unsigned char getch()
     {
         char ch;
         system("stty raw -echo");
@@ -130,7 +129,7 @@ unsigned char title_screen_data[] = {};
     }
     
 
-    int cgetc() {
+    unsigned char cgetc() {
         return getch();
     }
     
@@ -189,8 +188,8 @@ void load_room() {
 
         // Player x and y
         if(c=='@') {
-            y=this_row;
-            x=this_col;
+            player_y=this_row;
+            player_x=this_col;
         }
 
         // Goblin
@@ -263,9 +262,12 @@ unsigned int dumb_wait(unsigned int delay) {
 
     // Storing start time
     clock_t start_time = clock();
-
+    int counter = 0;
     // looping till required time is not achieved
     while (clock() < start_time + delay*250)
+        gotoxy(0,0);
+        counter++;
+        //printf("%d",counter);
         ;
 }
 
@@ -318,7 +320,7 @@ void attack(unsigned int weapon, unsigned int ax, unsigned int ay)
 
         sprintf(output, "miss! enemy health: %3d    ", enemies[this_enemy].health);
         output_message();
-        if((x == ax && y == ay)||(x == ax && (y == ay + 1 || y == ay - 1)) || (y == ay && (x == ax + 1 || x == ax - 1))) 
+        if((player_x == ax && player_y == ay)||(player_x == ax && (player_y == ay + 1 || player_y == ay - 1)) || (player_y == ay && (player_x == ax + 1 || player_x == ax - 1))) 
         {
             health -= enemies[this_enemy].strength;
         }
@@ -421,10 +423,10 @@ void move_enemies() {
 
             // Gobbo goes for player
             if(enemies[i].tile == 'G') {
-                if(enemies[i].x > x) enemies[i].x-=1;
-                if(enemies[i].x < x) enemies[i].x+=1;
-                if(enemies[i].y > y) enemies[i].y-=1;
-                if(enemies[i].y < y) enemies[i].y+=1;
+                if(enemies[i].x > player_x) enemies[i].x-=1;
+                if(enemies[i].x < player_x) enemies[i].x+=1;
+                if(enemies[i].y > player_y) enemies[i].y-=1;
+                if(enemies[i].y < player_y) enemies[i].y+=1;
             }
 
             // Redraw
@@ -485,8 +487,8 @@ void draw_move(bool replace) {
 
     // Draw new location
     cputcxy(old_x,old_y,get_map(old_x,old_y));
-    cputcxy(x,y,64); 
-    set_map(x, y, 64);
+    cputcxy(player_x, player_y, 64); 
+    set_map(player_x, player_y, 64);
 }
 
 
@@ -496,8 +498,9 @@ void draw_move(bool replace) {
 void title_screen() {
     
     clrscr();
-    mvprintw(9,0,"ASCII Dungeon\na game by retrogamecoders.com\n");
-    mvprintw(11,0,"\nPRESS A KEY\n");
+    mvprintw(9,10,"ASCII Dungeon");
+    mvprintw(12,0,"a game by retrogamecoders.com");
+    mvprintw(15,20,"PRESS A KEY");
     refresh();
     key=cgetc();
     in_play=true;
@@ -506,12 +509,15 @@ void title_screen() {
 
 bool game_over() {
     clrscr();
+    gotoxy(10,10);
     sprintf(output, "game over\n\n");
     output_message();
     timer=dumb_wait(1000);
+    gotoxy(0,14);
     sprintf(output, "ah, such a shame,\nyou were doing so well!\n\n");
     output_message();
     timer=dumb_wait(1000);
+    gotoxy(10,19);
     sprintf(output, "score:%03d\n\nplay again (y/n)?",score);
     output_message();
     key=cgetc();
@@ -523,55 +529,39 @@ bool game_over() {
     }
 }
 
-void game_loop() {
-
-    gotoxy(0,24);
-    sprintf(output, " k: %02d S: %03d *: %03d score: %04d", keys, health, magic, score);
-    output_message();
-
-    // Change direction
-    if(x != old_x || y != old_y) {
-        direction_x = x-old_x;
-        direction_y = y-old_y;
-    }
-
-
-    move_enemies();
-
-    // Backup the location
-    old_x = x;
-    old_y = y;
-
-    //if(kbhit()) { Remove comment to make more action than turn-based
-        
-        // Check keys;
+unsigned char get_key() {
+            // Check keys;
         switch (key=cgetc()) 
         { 
 
             case 'w':
-                if(y>0) y--; 
+                if(player_y>0) player_y--; 
                 break; 
             case 'a': 
-                if(x>0) x--; 
+                if(player_x>0) player_x--; 
                 break; 
+            
+            case 's': 
+                if(player_y<24) player_y++; 
+                break; 
+            case 'd': 
+                if(player_x<39) player_x++; 
+                break; 
+
+
             case 'A': 
             case 'o':
                 if(sword==true) {
-                    draw_momentary_object(x-1,y,x-1,y,'-',2000); 
-                    attack(10,x-1,y);
+                    draw_momentary_object(player_x-1,player_y,player_x-1,player_y,'-',2000); 
+                    attack(10,player_x-1,player_y);
                 }
                 break;     
-            case 's': 
-                if(y<24) y++; 
-                break; 
-            case 'd': 
-                if(x<39) x++; 
-                break; 
+
             case 'D': 
             case 'p':
                 if(sword==true) {
-                    draw_momentary_object(x+1,y,x+1,y,'-',2000); 
-                    attack(10,x+1,y);
+                    draw_momentary_object(player_x+1,player_y,player_x+1,player_y,'-',2000); 
+                    attack(10,player_x+1,player_y);
                 }
                 break; 
             case 'f': 
@@ -579,8 +569,8 @@ void game_loop() {
                 if(magic > 5) {
 
                     magic-=5;
-                    fx = x+direction_x;
-                    fy = y+direction_y;  
+                    fx = player_x+direction_x;
+                    fy = player_y+direction_y;  
 
                     c=get_map(fx,fy);
                     while(c==32 && magic > 0) {             
@@ -602,10 +592,37 @@ void game_loop() {
                 break;
             default:
                 // Figure out scan codes 
-                //gotoxy(0,0);
-                //sprintf(output, "%d",key);
+                gotoxy(0,0);
+                printf("%c %d",key, key);
                 break; 
         }
+
+
+        return key;
+}
+
+void game_loop() {
+
+    gotoxy(0,24);
+    sprintf(output, " k: %02d S: %03d *: %03d score: %04d", keys, health, magic, score);
+    output_message();
+
+    // Change direction
+    if(player_x != old_x || player_y != old_y) {
+        direction_x = player_x-old_x;
+        direction_y = player_y-old_y;
+    }
+
+
+    move_enemies();
+
+    // Backup the location
+    old_x = player_x;
+    old_y = player_y;
+
+    //if(kbhit()) { Remove comment to make more action than turn-based
+        
+    key = get_key();
     //} Remove comment to make more action than turn-based
 
     gotoxy(0,0);
@@ -614,7 +631,7 @@ void game_loop() {
 
     // Anything in our path?
     obstruction=false;
-    c=get_map(x,y);
+    c=get_map(player_x,player_y);
     
     // Collision
     switch (c)
@@ -640,7 +657,7 @@ void game_loop() {
             }else{
 
                 // Not enough keys to unlock!
-                set_map(x, y, '-'); // turn into partially open
+                set_map(player_x, player_y, '-'); // turn into partially open
                 health-=10; // lose 10 health
                 obstruction=true;
             }
@@ -656,7 +673,7 @@ void game_loop() {
 
             }else{
                 // Not enough keys to unlock!
-                set_map(x, y, 32);  // turn into fully open
+                set_map(player_x, player_y, 32);  // turn into fully open
                 health-=10;         // lose 10 health
                 obstruction=true;
             }
@@ -688,12 +705,12 @@ void game_loop() {
 /* Enemies >> */
 
         case 'G': // Gobbo
-            attack(5,x,y);
+            attack(5,player_x,player_y);
             obstruction=true;
             break;
 
         case 'R': // Rats
-            attack(5,x,y);
+            attack(5,player_x,player_y);
             obstruction=true;
             break;
 
@@ -730,8 +747,8 @@ void game_loop() {
 
     // If obstructed then bounce
     if(obstruction) {
-        x=old_x;
-        y=old_y;
+        player_x=old_x;
+        player_y=old_y;
     } else {
         draw_move(false);
     }
@@ -782,7 +799,7 @@ int main() {
         // Set up the screen
         load_room();
         draw_screen();
-        cputcxy(x,y,'@');
+        cputcxy(player_x,player_y,'@');
 
         // Game on!
         in_play = true;
