@@ -7,11 +7,17 @@ conversions will then use header files and definitions
 
  install ncurses: sudo apt-get install libncurses-dev
 
+ 
+
+ cl65 -t pet -v -o dungeonPET.prg dungeon.c && xpet dungeonPET.prg > /dev/null
+ cl65 -t c64 -v -o dungeon64.prg dungeon.c && x64sc dungeon64.prg > /dev/null
+ 
 */
+
+
 
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <stdbool.h>
 #include <unistd.h>
 #include <string.h>
@@ -21,10 +27,10 @@ conversions will then use header files and definitions
 bool run=true;
 bool in_play=false;
 bool obstruction=false;
-unsigned char info_row = 23;
+unsigned char info_row = 22;
 unsigned int this_row;
 unsigned int this_col;
-unsigned int timer,delay;
+unsigned int timer,delay,counter;
 unsigned char key,i,c;
 unsigned char player_x=19;
 unsigned char player_y=8;
@@ -75,7 +81,7 @@ unsigned int dumb_wait(unsigned int delay) {
     int counter = 0;
     // looping till required time is not achieved
     while (clock() < start_time + delay*250)
-        gotoxy(0,0);
+       
         counter++;
         //printf("%d",counter);
         ;
@@ -88,7 +94,7 @@ unsigned int dumb_wait(unsigned int delay) {
 
 // Player 
 unsigned char keys,idols,potion=0;
-int health=100;
+signed char health=100;
 int magic=100;
 unsigned int score=0;
 bool sword = false;
@@ -102,7 +108,7 @@ struct enemy {
     unsigned char y;
     unsigned char old_x;
     unsigned char old_y;
-    char health;
+    signed char health;
     unsigned char strength;
     unsigned char speed;
     unsigned char armour;
@@ -112,29 +118,20 @@ unsigned int this_enemy = 0;
 struct enemy enemies[1000];
 
 
-
-unsigned char title_screen_data[] = {};
-
-
 #include "maze.h"
 
-#if defined (__CC65__)
+
 
     void output_message() {
-
+        gotoxy(0,info_row);
+        printf("                                       ");
+        gotoxy(1,info_row);
         printf(output);
-        output[0] = "\0";
+        sprintf(output, "%s", "                                      ");
+        gotoxy(0,info_row);
     }
 
 
-#else
-    void output_message() {
-        printw("%s", output);
-        output[0] = '\0';
-    }
-
-
-#endif
 
 
 
@@ -158,6 +155,11 @@ unsigned char get_map(char x, char y) {
 void load_room() {
     int pos=0;
 
+    clrscr();
+    
+    sprintf(output, "Loading room %d",room);
+    output_message();
+
     srand((unsigned)time(NULL));
     carveMaze();
     placePlayer();
@@ -174,10 +176,7 @@ void load_room() {
     placeObject('K');
 
 
-    clrscr();
-    gotoxy(0,info_row);
-    sprintf(output, "loading room %d",room);
-    output_message();
+
    
 
     for (this_row = 0; this_row < 24; this_row++) {  
@@ -293,7 +292,7 @@ void attack(unsigned int weapon, unsigned int ax, unsigned int ay)
         enemies[this_enemy].health-=weapon;
         if(enemies[this_enemy].health>0) 
         {
-            gotoxy(0,info_row);
+            
             
             sprintf(output, "hit!! enemy health: %3d    ", enemies[this_enemy].health);
             output_message();
@@ -303,9 +302,9 @@ void attack(unsigned int weapon, unsigned int ax, unsigned int ay)
 
         
     } else {
-        gotoxy(0,info_row);
+        
 
-        sprintf(output, "miss! enemy health: %3d    ", enemies[this_enemy].health);
+        sprintf(output, "miss! enemy health: %3d ", enemies[this_enemy].health);
         output_message();
         if((player_x == ax && player_y == ay)||(player_x == ax && (player_y == ay + 1 || player_y == ay - 1)) || (player_y == ay && (player_x == ax + 1 || player_x == ax - 1))) 
         {
@@ -317,9 +316,10 @@ void attack(unsigned int weapon, unsigned int ax, unsigned int ay)
     if(enemies[this_enemy].health < 1 ) {
 
         // Success!
-        gotoxy(0,info_row);
-        sprintf(output, "enemy defeated!                      ");
+        
+        sprintf(output, "enemy defeated!");
         output_message();
+        
         // Draw tile in new location
         cputcxy(ax,ay,' '); 
         set_map(ax,ay,' ');
@@ -328,6 +328,7 @@ void attack(unsigned int weapon, unsigned int ax, unsigned int ay)
         // Up the score
         score+=10;
         timer=dumb_wait(1000);
+        
     }
 
 }
@@ -347,8 +348,8 @@ void enemy_attack(unsigned int this_enemy)
         } else {
             health-=enemies[this_enemy].strength;
         }    
-        gotoxy(0,info_row);
-        sprintf(output, "ouch! health: %3d        ", health);
+        
+        sprintf(output, "ouch! health: %3d", health);
         output_message();
         timer=dumb_wait(1000);
 
@@ -361,12 +362,12 @@ void enemy_attack(unsigned int this_enemy)
                 cputcxy(enemies[this_enemy].x,enemies[this_enemy].y,' '); 
                 set_map(enemies[this_enemy].x,enemies[this_enemy].y,' ');
                 enemies[this_enemy].tile = ' ';
-                gotoxy(0,info_row);
-                sprintf(output, "enemy defeated!            ");
+                
+                sprintf(output, "enemy defeated!");
                 output_message();
             }else {
-                gotoxy(0,info_row);
-                sprintf(output, "block health: %3d      ", health);}
+                
+                sprintf(output, "block health: %3d", health);}
                 output_message();
         }
         
@@ -376,8 +377,8 @@ void enemy_attack(unsigned int this_enemy)
     if(health < 1) {
 
         // Fail!
-        gotoxy(0,info_row);
-        sprintf(output, "enemy defeated you!                  ");
+        
+        sprintf(output, "enemy defeated you!");
         output_message();
         health = 0;
         timer=dumb_wait(1000);
@@ -482,13 +483,16 @@ void draw_move(bool replace) {
 
 
 // This is the default title screen
-void title_screen() {
+int title_screen() {
     
     clrscr();
     sprintf(output, "ASCII Dungeon\na game by retrogamecoders.com\nPRESS A KEY");
     output_message();
-    key=cgetc();
+    counter=0;
+    while(!kbhit()) { counter++; }
     in_play=true;
+    clrscr();
+    return counter;
 }
 
 
@@ -591,8 +595,8 @@ unsigned char get_key() {
 void game_loop() {
 
     gotoxy(0,24);
-    sprintf(output, " k: %02d S: %03d *: %03d score: %04d", keys, health, magic, score);
-    output_message();
+    printf(output, " K: %02d H: %03d *: %03d Score: %04d", keys, health, magic, score);
+    //output_message();
 
     // Change direction
     if(player_x != old_x || player_y != old_y) {
@@ -612,8 +616,8 @@ void game_loop() {
     key = get_key();
     //} Remove comment to make more action than turn-based
 
-    gotoxy(0,info_row);
-    sprintf(output, "                                                ");
+    
+    sprintf(output, "                                      ");
     output_message();
 
     // Anything in our path?
@@ -751,9 +755,7 @@ void game_loop() {
 
 int main() {
 
-    // Use current time as 
-    // seed for random generator 
-    srand(1); 
+
 
     /* Clear Screen */
     clrscr();
@@ -762,7 +764,7 @@ int main() {
     cursor(0);
 
     // Titles
-    title_screen();
+    counter = title_screen();
 
     // Start running     
     run=true;
@@ -782,6 +784,10 @@ int main() {
             enemy_count=0;
             sword=false;
         }
+
+        // Use current time as 
+        // seed for random generator 
+        srand(counter);
 
         // Set up the screen
         load_room();
