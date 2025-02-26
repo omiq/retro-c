@@ -190,7 +190,7 @@ void load_room() {
 
     clrscr();
     
-    sprintf(output, "Loading room %d",room);
+    sprintf(output, "loading room %d",room);
     output_message();
 
     srand((unsigned)time(NULL));
@@ -198,20 +198,20 @@ void load_room() {
     placePlayer();
 
     // 1 Gobbo less than per room level
-    for(i=0; i<room-1; i++) placeObject('G');
+    for(i=0; i<room-1; i++) placeObject('g');
     
 
     // 1 piece of idol per room level
-    for(i=0; i<room; i++) placeObject('I');
+    for(i=0; i<room; i++) placeObject('i');
     
     // Increase rats per room level   
-    for(i=0; i<room+1; i++) placeObject('R');
+    for(i=0; i<room+1; i++) placeObject('r');
 
     placeObject('*');
     placeObject('/');
     placeObject('$');
-    placeObject('H');
-    placeObject('K');
+    placeObject('h');
+    placeObject('k');
 
 
 
@@ -229,7 +229,7 @@ void load_room() {
         }
 
         // Goblin
-        if(c=='G') {
+        if(c=='g') {
 
             // Increment for next enemy (Enemy 0 is counted as no enemy)
             enemy_count+=1;
@@ -249,7 +249,7 @@ void load_room() {
         }  
 
         // Rat
-        else if (c=='R') {
+        else if (c=='r') {
 
             // Increment for next enemy (Enemy 0 is counted as no enemy)
             enemy_count+=1;
@@ -439,7 +439,7 @@ void move_enemies() {
             enemies[i].old_y = enemies[i].y; 
             
             // Rat is random
-            if(enemies[i].tile == 'R') {
+            if(enemies[i].tile == 'r') {
                 rnd = (rand() % (4)) + 1; 
                 if(rnd == 4) enemies[i].x-=1;
                 if(rnd == 2) enemies[i].x+=1;
@@ -448,7 +448,7 @@ void move_enemies() {
             }
 
             // Gobbo goes for player
-            if(enemies[i].tile == 'G') {
+            if(enemies[i].tile == 'g') {
                 if(enemies[i].x > player_x) enemies[i].x-=1;
                 if(enemies[i].x < player_x) enemies[i].x+=1;
                 if(enemies[i].y > player_y) enemies[i].y-=1;
@@ -525,13 +525,13 @@ int title_screen() {
     
     clrscr();
     
-    sprintf(output, "ASCII Dungeon");
+    sprintf(output, "pet dungeon");
     cputsxy(11,10, output);
     
     sprintf(output, "a game by retrogamecoders.com");
     cputsxy(2,15, output);
     
-    sprintf(output, "PRESS A KEY");
+    sprintf(output, "press a key");
     cputsxy(12,20, output);
 
 
@@ -644,7 +644,7 @@ unsigned char get_key() {
 
 void game_loop() {
 
-        sprintf(output,"    K: %02d H: %03d *: %03d Score: %04d", keys, health, magic, score);
+        sprintf(output,"    k: %02d h: %03d *: %03d score: %04d", keys, health, magic, score);
         cputsxy(0,23,output);
         refresh();
 
@@ -683,7 +683,7 @@ void game_loop() {
             break;
         
 
-        case 'K': // Key +1
+        case 'k': // Key +1
             keys+=1;
             break;
 
@@ -746,11 +746,11 @@ void game_loop() {
             magic+=100;
             break;
 
-        case 'M': // Cash money
+        case 'm': // Cash money
             score+=15;
             break;
 
-        case 'H': // Health
+        case 'h': // Health
             health+=25;
             if(health>100) health=100; // Can't be more than 100%!
             break;
@@ -758,19 +758,19 @@ void game_loop() {
 
 /* Enemies >> */
 
-        case 'G': // Gobbo
+        case 'g': // Gobbo
             attack(weapon,player_x,player_y);
             obstruction=true;
             break;
 
-        case 'R': // Rats
+        case 'r': // Rats
             attack(weapon,player_x,player_y);
             obstruction=true;
             break;
 
 /* ^^ Enemies */
 
-        case 'I': // Idol
+        case 'i': // Idol
             score+=10;
             idols+=1;
             if(idols==room) {
@@ -847,6 +847,7 @@ int main() {
             enemy_count=0;
             sword=false;
             weapon = 1;
+            idols=0;
         }
 
         // Use current time as 
