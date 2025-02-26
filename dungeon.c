@@ -31,7 +31,7 @@ unsigned char info_row = 22;
 unsigned int this_row;
 unsigned int this_col;
 unsigned int timer,delay,counter;
-unsigned char key,i,c;
+unsigned char key,i,c, weapon;
 unsigned char player_x=19;
 unsigned char player_y=8;
 unsigned char old_x, old_y, direction_x, direction_y, fx, fy;
@@ -65,6 +65,13 @@ unsigned int dumb_wait(unsigned int delay) {
     return timer;
 }
 
+void echo(void) {
+    return;
+}
+
+void refresh(void) {
+    return;
+}
 
 
 #endif
@@ -72,6 +79,31 @@ unsigned int dumb_wait(unsigned int delay) {
     #include "notconio.h"
     #include <time.h>
 
+
+    /* For Ncurses */
+    int kbhit(void)    
+    {
+        int ch, r;
+
+        // turn off getch() blocking and echo
+        nodelay(stdscr, TRUE);
+        noecho();
+
+        // check for input
+        ch = getch();
+        if( ch == ERR)      // no input
+                r = FALSE;
+        else                // input
+        {
+                r = TRUE;
+                ungetch(ch);
+        }
+
+        // restore block and echo
+        echo();
+        nodelay(stdscr, FALSE);
+        return(r);
+    }
 
     unsigned int dumb_wait(unsigned int delay) {
    
@@ -95,9 +127,10 @@ unsigned int dumb_wait(unsigned int delay) {
 // Player 
 unsigned char keys,idols,potion=0;
 signed char health=100;
-int magic=100;
+int magic = 0;
 unsigned int score=0;
 bool sword = false;
+
 
 // Enemy
 unsigned int enemy_count=0;
@@ -123,12 +156,12 @@ struct enemy enemies[1000];
 
 
     void output_message() {
-        gotoxy(0,info_row);
-        printf("                                       ");
-        gotoxy(1,info_row);
-        printf(output);
-        sprintf(output, "%s", "                                      ");
-        gotoxy(0,info_row);
+        unsigned char blank[255];
+        sprintf(blank, "%s", "                                      ");
+        cputsxy(0,info_row,blank);
+        cputsxy(1,info_row,output);
+        sprintf(output, "%s",blank);
+        refresh();
     }
 
 
@@ -163,12 +196,17 @@ void load_room() {
     srand((unsigned)time(NULL));
     carveMaze();
     placePlayer();
-    placeObject('G');
+
+    // 1 Gobbo less than per room level
+    for(i=0; i<room-1; i++) placeObject('G');
+    
 
     // 1 piece of idol per room level
     for(i=0; i<room; i++) placeObject('I');
     
-    placeObject('R');
+    // Increase rats per room level   
+    for(i=0; i<room+1; i++) placeObject('R');
+
     placeObject('*');
     placeObject('/');
     placeObject('$');
@@ -486,8 +524,17 @@ void draw_move(bool replace) {
 int title_screen() {
     
     clrscr();
-    sprintf(output, "ASCII Dungeon\na game by retrogamecoders.com\nPRESS A KEY");
-    output_message();
+    
+    sprintf(output, "ASCII Dungeon");
+    cputsxy(11,10, output);
+    
+    sprintf(output, "a game by retrogamecoders.com");
+    cputsxy(2,15, output);
+    
+    sprintf(output, "PRESS A KEY");
+    cputsxy(12,20, output);
+
+
     counter=0;
     while(!kbhit()) { counter++; }
     in_play=true;
@@ -498,20 +545,23 @@ int title_screen() {
 
 bool game_over() {
     clrscr();
-    gotoxy(10,10);
-    sprintf(output, "game over\n\n");
-    output_message();
+    sprintf(output, " game over\n\n");
+    cputsxy(15,10, output);
+    refresh();
     timer=dumb_wait(1000);
-    gotoxy(0,14);
-    sprintf(output, "ah, such a shame,\nyou were doing so well!\n\n");
-    output_message();
+    sprintf(output, " ah, such a shame,\n               you were doing so well!\n\n");
+    cputsxy(16,14, output);
     timer=dumb_wait(1000);
-    gotoxy(10,19);
-    sprintf(output, "score:%03d\n\nplay again (y/n)?",score);
-    output_message();
+    refresh();
+    sprintf(output, " score:%03d\n\n                 play again (y/n)?",score);
+    cputsxy(20,19, output);
+    refresh();
     key=cgetc();
     in_play=false;
     if(key=='n') {
+        cursor(1);
+        echo();
+        refresh();
         return false;
     } else {
         return true;
@@ -594,9 +644,9 @@ unsigned char get_key() {
 
 void game_loop() {
 
-    gotoxy(0,24);
-    printf(output, " K: %02d H: %03d *: %03d Score: %04d", keys, health, magic, score);
-    //output_message();
+        sprintf(output,"    K: %02d H: %03d *: %03d Score: %04d", keys, health, magic, score);
+        cputsxy(0,23,output);
+        refresh();
 
     // Change direction
     if(player_x != old_x || player_y != old_y) {
@@ -672,6 +722,19 @@ void game_loop() {
 
         case '/': // Sword!
             sword=true;
+            
+            if(weapon<5) {
+                weapon=5;
+                sprintf(output, "You found a sword!");
+            
+            } else {
+                weapon++;
+                sprintf(output, "+1 to your attack!");
+            }
+
+            output_message();
+            timer=dumb_wait(1000);
+
             break;
 
         case '$': // Cash money
@@ -696,12 +759,12 @@ void game_loop() {
 /* Enemies >> */
 
         case 'G': // Gobbo
-            attack(5,player_x,player_y);
+            attack(weapon,player_x,player_y);
             obstruction=true;
             break;
 
         case 'R': // Rats
-            attack(5,player_x,player_y);
+            attack(weapon,player_x,player_y);
             obstruction=true;
             break;
 
@@ -780,9 +843,10 @@ int main() {
             keys=0;
             room=1;
             potion=0;
-            magic=0;
+            magic = 0;
             enemy_count=0;
             sword=false;
+            weapon = 1;
         }
 
         // Use current time as 
