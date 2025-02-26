@@ -685,6 +685,7 @@ void game_loop() {
 
         case 'k': // Key +1
             keys+=1;
+            sprintf(output, "you found a key");
             break;
 
         // Door
@@ -694,6 +695,7 @@ void game_loop() {
                 keys-=1;
                 score+=5;
                 obstruction=false;
+                sprintf(output, "you opened a door");
 
             }else{
 
@@ -701,6 +703,7 @@ void game_loop() {
                 set_map(player_x, player_y, '-'); // turn into partially open
                 health-=10; // lose 10 health
                 obstruction=true;
+                sprintf(output, "out of the way, coming through!");
             }
             break;
 
@@ -711,12 +714,14 @@ void game_loop() {
                 keys-=1;
                 score+=5;
                 obstruction=false;
+                sprintf(output, "you opened a door");
 
             }else{
                 // Not enough keys to unlock!
                 set_map(player_x, player_y, ' ');  // turn into fully open
                 health-=10;         // lose 10 health
                 obstruction=true;
+                sprintf(output, "who needs keys anyway?");
             }
             break;
 
@@ -725,7 +730,7 @@ void game_loop() {
             
             if(weapon<5) {
                 weapon=5;
-                sprintf(output, "You found a sword!");
+                sprintf(output, "you found a sword!");
             
             } else {
                 weapon++;
@@ -739,11 +744,13 @@ void game_loop() {
 
         case '$': // Cash money
             score+=5;
+            sprintf(output, "ka-ching!");
             break;
 
         case '*': // Potion
             score+=15;
             magic+=100;
+            sprintf(output, "power up!");
             break;
 
         case 'm': // Cash money
@@ -752,6 +759,7 @@ void game_loop() {
 
         case 'h': // Health
             health+=25;
+            sprintf(output, "ahh that is better!");
             if(health>100) health=100; // Can't be more than 100%!
             break;
 
