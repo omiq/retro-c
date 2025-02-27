@@ -1,5 +1,16 @@
-#define MAP_WIDTH 40
-#define MAP_HEIGHT 24
+
+#ifdef VIC20
+
+    #define MAP_WIDTH 23
+    #define MAP_HEIGHT 20
+    unsigned char info_row = 22;
+#else
+    #define MAP_WIDTH 40
+    #define MAP_HEIGHT 24
+    unsigned char info_row = 22;
+
+#endif
+
 #define NUM_ROOMS 3
 char rooms[NUM_ROOMS][MAP_HEIGHT][MAP_WIDTH + 1] = {
     {

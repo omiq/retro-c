@@ -13,9 +13,18 @@ time_t time(time_t* t) {
 
 #endif
 
+#ifdef VIC20
 
-#define MAP_WIDTH 40
-#define MAP_HEIGHT 24
+    #define MAP_WIDTH 22
+    #define MAP_HEIGHT 22
+    unsigned char info_row = 22;
+#else
+    #define MAP_WIDTH 40
+    #define MAP_HEIGHT 24
+    unsigned char info_row = 22;
+
+#endif
+
 
 /* Reserve top 1 and bottom 2 lines for HUD */
 #define HUD_TOP 1

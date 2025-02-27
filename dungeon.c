@@ -27,7 +27,7 @@ conversions will then use header files and definitions
 bool run=true;
 bool in_play=false;
 bool obstruction=false;
-unsigned char info_row = 22;
+
 unsigned int this_row;
 unsigned int this_col;
 unsigned int timer,delay,counter;
