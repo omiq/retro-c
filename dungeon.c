@@ -36,8 +36,8 @@ unsigned char player_x=19;
 unsigned char player_y=8;
 unsigned char old_x, old_y, direction_x, direction_y, fx, fy;
 unsigned char room=1;
-unsigned char buffer [sizeof(int)*8+1];
-char output [256];
+//unsigned char buffer [sizeof(int)*8+1];
+
 
 
 #if defined (__CC65__)
@@ -152,11 +152,11 @@ struct enemy enemies[1000];
 
 
 #include "maze.h"
-
+char output [MAP_WIDTH];
 
 
     void output_message() {
-        unsigned char blank[255];
+        unsigned char blank[40];
         sprintf(blank, "%s", "                                      ");
         cputsxy(0,info_row,blank);
         cputsxy(1,info_row,output);
@@ -177,7 +177,7 @@ unsigned char get_map(char x, char y) {
     
     unsigned char c;
 
-    c = game_map[40*y+x];
+    c = game_map[MAP_WIDTH*y+x];
     if(c==0) {return ' ';}
     return c;
   
@@ -217,8 +217,8 @@ void load_room() {
 
    
 
-    for (this_row = 0; this_row < 24; this_row++) {  
-        for(this_col = 0; this_col < 40; this_col++) { 
+    for (this_row = 0; this_row < MAP_HEIGHT; this_row++) {  
+        for(this_col = 0; this_col < MAP_WIDTH; this_col++) { 
         
         c=map[this_row][this_col];
 
@@ -287,7 +287,7 @@ void load_room() {
 void set_map(char x, char y, int tile) {
     
     // Set the part of the array to the given tile
-    game_map[40*y+x]=tile;
+    game_map[MAP_WIDTH*y+x]=tile;
     
 }
 
@@ -581,10 +581,10 @@ unsigned char get_key() {
                 break; 
             
             case 's': 
-                if(player_y<24) player_y++; 
+                if(player_y<MAP_HEIGHT) player_y++; 
                 break; 
             case 'd': 
-                if(player_x<39) player_x++; 
+                if(player_x<MAP_WIDTH) player_x++; 
                 break; 
 
 
@@ -645,7 +645,7 @@ unsigned char get_key() {
 void game_loop() {
 
         sprintf(output,"    k: %02d h: %03d *: %03d score: %04d", keys, health, magic, score);
-        cputsxy(0,23,output);
+        cputsxy(0,MAP_HEIGHT-1,output);
         refresh();
 
     // Change direction
