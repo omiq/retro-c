@@ -212,8 +212,8 @@ void load_room() {
     placeObject('$');
     placeObject('h');
     placeObject('k');
-
-
+    placeHDoor();
+    placeVDoor();
 
    
 

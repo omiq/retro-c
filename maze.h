@@ -261,3 +261,35 @@ void placeObject(unsigned char tile) {
     map[row][col] = tile;
 }
 
+void placeHDoor(void) {
+    int row, col;
+    unsigned char tile;
+    tile = '+';
+    do {
+        row = (rand() % (PLAYABLE_HEIGHT - 2)) + HUD_TOP + 1;
+        col = (rand() % (MAP_WIDTH - 2)) + 1;
+    } while (map[row][col] != '.' ||
+             map[row][col-1] != '.' ||
+             map[row][col+1] != '.'             
+            );
+    map[row][col] = tile;
+    map[row][col-1] = '#';
+    map[row][col+1] = '#';
+}
+
+void placeVDoor(void) {
+    int row, col;
+    unsigned char tile;
+    tile = '+';
+    do {
+        row = (rand() % (PLAYABLE_HEIGHT - 2)) + HUD_TOP + 1;
+        col = (rand() % (MAP_WIDTH - 2)) + 1;
+    } while (map[row][col] != '.' ||
+             map[row-1][col] != '.' ||
+             map[row+1][col] != '.'          
+            
+            );
+    map[row][col] = tile;
+    map[row-1][col] = '#';
+    map[row+1][col] = '#';
+}
