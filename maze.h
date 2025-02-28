@@ -269,8 +269,8 @@ void placeHDoor(void) {
         row = (rand() % (PLAYABLE_HEIGHT - 2)) + HUD_TOP + 1;
         col = (rand() % (MAP_WIDTH - 2)) + 1;
     } while (map[row][col] != '.' ||
-             map[row][col-1] != '.' ||
-             map[row][col+1] != '.'             
+        map[row][col-1] != '.' ||map[row][col-2] != '#' ||
+             map[row][col+1] != '.'||map[row][col+2] != '#'              
             );
     map[row][col] = tile;
     map[row][col-1] = '#';
@@ -286,7 +286,9 @@ void placeVDoor(void) {
         col = (rand() % (MAP_WIDTH - 2)) + 1;
     } while (map[row][col] != '.' ||
              map[row-1][col] != '.' ||
-             map[row+1][col] != '.'          
+             map[row-2][col] != '#'||
+             map[row-1][col] != '.'||
+             map[row+2][col] != '#'          
             
             );
     map[row][col] = tile;

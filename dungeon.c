@@ -156,7 +156,7 @@ char output [MAP_WIDTH];
 
 
     void output_message() {
-        unsigned char blank[40];
+        char blank[40];
         sprintf(blank, "%s", "                                      ");
         cputsxy(0,info_row,blank);
         cputsxy(1,info_row,output);
@@ -549,11 +549,15 @@ bool game_over() {
     cputsxy(15,10, output);
     refresh();
     timer=dumb_wait(1000);
-    sprintf(output, " ah, such a shame,\n               you were doing so well!\n\n");
+    sprintf(output, " ah, such a shame,");
+    cputsxy(16,12, output);
+    sprintf(output, "you were doing so well!");
     cputsxy(16,14, output);
     timer=dumb_wait(1000);
     refresh();
-    sprintf(output, " score:%03d\n\n                 play again (y/n)?",score);
+    sprintf(output, " score:%03d",score);
+    cputsxy(20,18, output);
+    sprintf(output, " play again (y/n)?");
     cputsxy(20,19, output);
     refresh();
     key=cgetc();
