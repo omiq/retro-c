@@ -187,6 +187,10 @@ unsigned char get_map(char x, char y) {
 
 void load_room() {
     int pos=0;
+    int playable_offsetY, offsetX, offsetY;
+    playable_offsetY = HUD_TOP;
+    offsetX = (MAP_WIDTH - MAZE_WIDTH) / 2;
+    offsetY = playable_offsetY + ((PLAYABLE_HEIGHT - MAZE_HEIGHT) / 2);
 
     clrscr();
     
@@ -215,9 +219,17 @@ void load_room() {
     placeHDoor();
     placeVDoor();
 
-   
+    /* Copy the generated maze into the full map.
+       First fill the entire map with walls. */
+    for (this_row = 0; this_row < PLAYABLE_HEIGHT; this_row++) {
+        for (this_col = 0; this_col < MAP_WIDTH; this_col++) {
+            game_map[pos] = '#';   
+            pos++;  
+        }
+    }
 
-    for (this_row = 0; this_row < MAP_HEIGHT; this_row++) {  
+    pos = 0;
+    for (this_row = 0; this_row < PLAYABLE_HEIGHT; this_row++) {  
         for(this_col = 0; this_col < MAP_WIDTH; this_col++) { 
         
         c=map[this_row][this_col];
@@ -476,9 +488,9 @@ void move_enemies() {
 void draw_screen() {
 
     int row,col;
-    for(row=1; row<22; row++)
+    for(row=0; row<PLAYABLE_HEIGHT; row++)
     {
-        for(col=1; col < 38; col++){
+        for(col=0; col < MAZE_WIDTH; col++){
             cputcxy(col,row,get_map(col,row));
         }
     };

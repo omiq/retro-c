@@ -47,7 +47,7 @@ time_t time(time_t* t) {
 unsigned char map[MAP_HEIGHT][MAP_WIDTH + 1];
 
 /* Global temporary maze array */
-unsigned char maze[MAZE_HEIGHT][MAZE_WIDTH + 1];
+//unsigned char maze[MAZE_HEIGHT][MAZE_WIDTH + 1];
 
 /* Structure for a cell coordinate in the grid */
 typedef struct {
@@ -96,9 +96,9 @@ void carveMaze(void) {
     /* Initialize the temporary maze with walls */
     for (i = 0; i < MAZE_HEIGHT; i++) {
         for (j = 0; j < MAZE_WIDTH; j++) {
-            maze[i][j] = '#';
+            map[i][j] = '#';
         }
-        maze[i][MAZE_WIDTH] = '\0';
+        map[i][MAZE_WIDTH] = '\0';
     }
 
     /* Clear the visited array for the cell grid */
@@ -108,7 +108,7 @@ void carveMaze(void) {
         }
     }
 
-    /* Start at cell (0, 0) */
+    /* Start cell (0, 0) */
     {
         int startX, startY, sx, sy;
         startX = 0;
@@ -118,7 +118,7 @@ void carveMaze(void) {
         sy = startY * 4 + 1;
         for (i = 0; i < CELL_HEIGHT; i++) {
             for (j = 0; j < CELL_WIDTH; j++) {
-                maze[sy + i][sx + j] = '.';
+                map[sy + i][sx + j] = '.';
             }
         }
         {
@@ -169,27 +169,27 @@ void carveMaze(void) {
                 if (dir == 0) {  /* Up */
                     int wallY = cy - 1;
                     for (j = 0; j < CELL_WIDTH; j++) {
-                        maze[wallY][cx + j] = '.';
+                        map[wallY][cx + j] = '.';
                     }
                 } else if (dir == 1) {  /* Right */
                     int wallX = cx + CELL_WIDTH;
                     for (i = 0; i < CELL_HEIGHT; i++) {
-                        maze[cy + i][wallX] = '.';
+                        map[cy + i][wallX] = '.';
                     }
                 } else if (dir == 2) {  /* Down */
                     int wallY = cy + CELL_HEIGHT;
                     for (j = 0; j < CELL_WIDTH; j++) {
-                        maze[wallY][cx + j] = '.';
+                        map[wallY][cx + j] = '.';
                     }
                 } else if (dir == 3) {  /* Left */
                     int wallX = cx - 1;
                     for (i = 0; i < CELL_HEIGHT; i++) {
-                        maze[cy + i][wallX] = '.';
+                        map[cy + i][wallX] = '.';
                     }
                 }
                 for (i = 0; i < CELL_HEIGHT; i++) {
                     for (j = 0; j < CELL_WIDTH; j++) {
-                        maze[ny_maze + i][nx_maze + j] = '.';
+                        map[ny_maze + i][nx_maze + j] = '.';
                     }
                 }
             }
@@ -208,27 +208,9 @@ void carveMaze(void) {
         }
     }
 
-    /* Copy the generated maze into the full map.
-       First fill the entire map with walls. */
-    for (i = 0; i < MAP_HEIGHT; i++) {
-        for (j = 0; j < MAP_WIDTH; j++) {
-            map[i][j] = '#';
-        }
-        map[i][MAP_WIDTH] = '\0';
-    }
 
-    /* Center the maze within the playable area */
-    {
-        int playable_offsetY, offsetX, offsetY;
-        playable_offsetY = HUD_TOP;
-        offsetX = (MAP_WIDTH - MAZE_WIDTH) / 2;
-        offsetY = playable_offsetY + ((PLAYABLE_HEIGHT - MAZE_HEIGHT) / 2);
-        for (i = 0; i < MAZE_HEIGHT; i++) {
-            for (j = 0; j < MAZE_WIDTH; j++) {
-                map[i + offsetY][j + offsetX] = maze[i][j];
-            }
-        }
-    }
+
+
 }
 
 /* Place the player character '@' in a random valid position within the playable area.
