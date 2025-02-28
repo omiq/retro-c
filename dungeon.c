@@ -488,12 +488,34 @@ void move_enemies() {
 void draw_screen() {
 
     int row,col;
-    for(row=0; row<PLAYABLE_HEIGHT; row++)
+   /* for(row=0; row<PLAYABLE_HEIGHT; row++)
     {
         for(col=0; col < MAZE_WIDTH; col++){
             cputcxy(col,row,get_map(col,row));
         }
     };
+*/
+  
+/*
+.....
+.###.
+##@##
+.###.
+.....
+*/
+        cputcxy(player_x+1,player_y-1,get_map(player_x+1,player_y-1));
+        cputcxy(player_x-1,player_y-1,get_map(player_x-1,player_y-1));
+        cputcxy(player_x-1,player_y,get_map(player_x-1,player_y));
+        cputcxy(player_x+1,player_y,get_map(player_x+1,player_y));
+        cputcxy(player_x,player_y-1,get_map(player_x,player_y-1));
+        cputcxy(player_x,player_y+1,get_map(player_x,player_y+1));
+        cputcxy(player_x+1,player_y+1,get_map(player_x+1,player_y+1));
+        cputcxy(player_x-1,player_y+1,get_map(player_x-1,player_y+1));
+
+        cputcxy(player_x+2,player_y,get_map(player_x+2,player_y));
+        cputcxy(player_x-2,player_y,get_map(player_x-2,player_y));
+
+
 
 }
 
@@ -829,6 +851,7 @@ void game_loop() {
         player_y=old_y;
     } else {
         draw_move(false);
+        draw_screen();
     }
 
     if(health<1) {
