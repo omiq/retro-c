@@ -1,13 +1,8 @@
-global player_x, player_y, keys, health, score, room, potion, magic, enemy_count, sword, weapon, idols, draw_whole_screen
-
 import pygame
 import random
 import time
-import os
-from maze import *
-from game_objects import *
-
-
+from maze import carveMaze, placePlayer, placeObject, placeHDoor, placeVDoor, map
+from game_objects import load_images, Enemy
 
 # Constants
 MAP_WIDTH = 40
@@ -18,7 +13,6 @@ PLAYABLE_HEIGHT = MAP_HEIGHT - HUD_TOP - HUD_BOTTOM
 TILE_SIZE = 20
 
 # Global variables
-
 run = True
 in_play = False
 obstruction = False
@@ -41,6 +35,64 @@ weapon = 1
 enemy_count = 0
 enemies = []
 
+# Initialize the game
+def init():
+    global keys, health, score, room, potion, magic, enemy_count, sword, weapon, idols, draw_whole_screen
+    keys = 0
+    health = 100
+    score = 0
+    room = 2
+    potion = 0
+    magic = 0
+    enemy_count = 0
+    sword = False
+    weapon = 1
+    idols = 0
+    draw_whole_screen = False
+
+# Load the room
+def load_room():
+    global player_x, player_y, enemy_count, enemies, map, room, idols
+    carveMaze()
+    placePlayer()
+    enemies = []
+    enemy_count = 0
+    idols = 0
+
+    for i in range(room - 1):
+        placeObject('g')
+    for i in range(room):
+        placeObject('i')
+    for i in range(room + 1):
+        placeObject('r')
+    placeObject('*')
+    placeObject('|')
+    placeObject('$')
+    placeObject('h')
+    placeObject('k')
+    placeObject('s')
+    placeHDoor()
+    placeVDoor()
+
+    for y in range(PLAYABLE_HEIGHT):
+        for x in range(MAP_WIDTH):
+            c = map[y][x]
+            if c == '@':
+                player_y = y
+                player_x = x
+            elif c == 'g':
+                enemies.append(Enemy(c, room, x, y, 30, 5, 1, 10))
+                enemy_count += 1
+            elif c == 'r':
+                enemies.append(Enemy(c, room, x, y, 15, 5, 2, 0))
+
+# Draw the map
+def draw_map(screen, images):
+    for y in range(MAP_HEIGHT):
+        for x in range(MAP_WIDTH):
+            tile = map[y][x]
+            if tile in images:
+                screen.blit(images[tile], (x * TILE_SIZE, y * TILE_SIZE))
 
 # Check if the position is walkable
 def is_walkable(x, y):
@@ -48,7 +100,7 @@ def is_walkable(x, y):
 
 # Move the player
 def move_player(dx, dy):
-    global player_x, player_y, health, score, keys, idols, potion, sword, weapon, magic
+    global player_x, player_y, health, score, keys, idols, potion, sword, weapon, magic, room
     new_x = player_x + dx
     new_y = player_y + dy
     if is_walkable(new_x, new_y):
@@ -58,19 +110,14 @@ def move_player(dx, dy):
         player_y = new_y
         # Update the player's new position
         map[player_y][player_x] = '@'
-        
-        #print(f"Player moved to ({player_x}, {player_y})")  # Debug print
-        
+        print(f"Player moved to ({player_x}, {player_y})")  # Debug print
         # Handle interactions with objects
         tile = map[player_y][player_x]
         if tile == 'i':
             idols += 1
-            
-            # if idol count matches the room number, go to next room
             if idols == room:
                 room += 1
                 load_room()
-            
             map[player_y][player_x] = '@'
         elif tile == '$':
             score += 10
@@ -82,11 +129,10 @@ def move_player(dx, dy):
             keys += 1
             map[player_y][player_x] = '@'
         elif tile == '|':
-            if sword == False:
+            if not sword:
                 sword = True
             else:
                 weapon += 1
-            
             map[player_y][player_x] = '@'
         elif tile == '*':
             magic += 10
