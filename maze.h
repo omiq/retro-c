@@ -4,6 +4,7 @@
 #if defined (__CC65__)
 typedef unsigned long time_t;
 time_t time(time_t* t) {
+    t=0;
     return rand() % (100000000);
 }
 
@@ -13,17 +14,11 @@ time_t time(time_t* t) {
 
 #endif
 
-#ifdef VIC20
-
-    #define MAP_WIDTH 22
-    #define MAP_HEIGHT 22
-    unsigned char info_row = 22;
-#else
+// min screen
     #define MAP_WIDTH 40
     #define MAP_HEIGHT 24
     unsigned char info_row = 22;
 
-#endif
 
 
 /* Reserve top 1 and bottom 2 lines for HUD */

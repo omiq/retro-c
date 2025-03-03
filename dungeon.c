@@ -512,8 +512,9 @@ void move_enemies() {
 
 // Field of view/fog of war
 void update_fov(int player_x, int player_y, int radius) {
-    for (int dy = -radius; dy <= radius; dy++) {
-        for (int dx = -radius; dx <= radius; dx++) {
+    int dy,dx;
+    for (dy = -radius; dy <= radius; dy++) {
+        for (dx = -radius; dx <= radius; dx++) {
             int x = player_x + dx;
             int y = player_y + dy;
 
