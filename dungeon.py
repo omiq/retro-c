@@ -1,9 +1,13 @@
+global player_x, player_y, keys, health, score, room, potion, magic, enemy_count, sword, weapon, idols, draw_whole_screen
+
 import pygame
 import random
 import time
 import os
 from maze import *
 from game_objects import *
+
+
 
 # Constants
 MAP_WIDTH = 40
@@ -14,12 +18,13 @@ PLAYABLE_HEIGHT = MAP_HEIGHT - HUD_TOP - HUD_BOTTOM
 TILE_SIZE = 20
 
 # Global variables
+
 run = True
 in_play = False
 obstruction = False
 
-player_x = 19
-player_y = 8
+player_x = -1
+player_y = -1
 old_x, old_y = 0, 0
 direction_x, direction_y = 0, 0
 fx, fy = 0, 0
@@ -53,11 +58,19 @@ def move_player(dx, dy):
         player_y = new_y
         # Update the player's new position
         map[player_y][player_x] = '@'
-        print(f"Player moved to ({player_x}, {player_y})")  # Debug print
+        
+        #print(f"Player moved to ({player_x}, {player_y})")  # Debug print
+        
         # Handle interactions with objects
         tile = map[player_y][player_x]
         if tile == 'i':
             idols += 1
+            
+            # if idol count matches the room number, go to next room
+            if idols == room:
+                room += 1
+                load_room()
+            
             map[player_y][player_x] = '@'
         elif tile == '$':
             score += 10
@@ -68,11 +81,15 @@ def move_player(dx, dy):
         elif tile == 'k':
             keys += 1
             map[player_y][player_x] = '@'
-        elif tile == 's':
-            sword = True
+        elif tile == '|':
+            if sword == False:
+                sword = True
+            else:
+                weapon += 1
+            
             map[player_y][player_x] = '@'
         elif tile == '*':
-            potion += 1
+            magic += 10
             map[player_y][player_x] = '@'
 
 # Move enemies

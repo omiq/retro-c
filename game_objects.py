@@ -3,6 +3,7 @@ import pygame
 from maze import *
 
 
+
 # Load images for each character
 def load_images():
     images = {}
@@ -16,10 +17,10 @@ def load_images():
 
 # Create placeholder images for characters
 def create_placeholder_image(char, filename):
-    font = pygame.font.SysFont('Arial', TILE_SIZE)
+    font = pygame.font.SysFont('Roboto', TILE_SIZE)
     image = pygame.Surface((TILE_SIZE, TILE_SIZE))
-    image.fill((255, 255, 255))
-    text_surface = font.render(char, True, (0, 0, 0))
+    image.fill((0, 0, 0))
+    text_surface = font.render(char, True, (0, 255, 0))
     image.blit(text_surface, (0, 0))
     pygame.image.save(image, filename)
 
@@ -46,7 +47,7 @@ class Enemy:
 
 # Initialize the game
 def init():
-    global keys, health, score, room, potion, magic, enemy_count, sword, weapon, idols, draw_whole_screen
+    global player_x, player_y, keys, health, score, room, potion, magic, enemy_count, sword, weapon, idols, draw_whole_screen
     keys = 0
     health = 100
     score = 0
@@ -61,7 +62,7 @@ def init():
 
 # Load the room
 def load_room():
-    global player_x, player_y, enemy_count, enemies, map
+    global player_x, player_y, keys, health, score, room, potion, magic, enemy_count, sword, weapon, idols, draw_whole_screen
     carveMaze()
     placePlayer()
     enemies = []
@@ -86,8 +87,10 @@ def load_room():
         for x in range(MAP_WIDTH):
             c = map[y][x]
             if c == '@':
+                print(f"Player position: ({player_x}, {player_y})")
                 player_y = y
                 player_x = x
+                print(f"Player position: ({player_x}, {player_y})")
             elif c == 'g':
                 enemies.append(Enemy(c, room, x, y, 30, 5, 1, 10))
                 enemy_count += 1
