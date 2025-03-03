@@ -140,7 +140,7 @@ def move_player(dx, dy):
 
 # Move enemies
 def move_enemies():
-    global health
+    global health, run
     for enemy in enemies:
         if enemy.health <= 0:
             continue
@@ -164,7 +164,10 @@ def move_enemies():
         # Check for combat with player
         if enemy.x == player_x and enemy.y == player_y:
             health -= enemy.strength
-            print(f"Player attacked by {enemy.tile} at ({enemy.x}, {enemy.y}). Health: {health}")  # Debug print
+            if health > 0:
+                print(f"Player attacked by {enemy.tile} at ({enemy.x}, {enemy.y}). Health: {health}")  # Debug print
+            else:
+                run = False
 
 # Main game loop
 def game_loop(screen, images):
