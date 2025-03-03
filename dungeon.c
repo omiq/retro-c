@@ -8,9 +8,8 @@ conversions will then use header files and definitions
  install ncurses: sudo apt-get install libncurses-dev
 
  
-
- cl65 -t pet -v -o dungeonPET.prg dungeon.c && xpet dungeonPET.prg > /dev/null
- cl65 -t c64 -v -o dungeon64.prg dungeon.c && x64sc dungeon64.prg > /dev/null
+    cl65 -t pet -v -Cl -O -DCC65_NO_RUNTIME_TYPE_CHECKS -o dungeonPET.prg dungeon.c
+    cl65 -t c64 -v -o dungeon64.prg dungeon.c && x64sc dungeon64.prg > /dev/null
  
 */
 
@@ -127,9 +126,9 @@ void refresh(void) {
 
 // Player 
 unsigned char keys,idols,potion=0;
-signed char health=100;
-int magic = 0;
-unsigned int score=0;
+signed char health;
+int magic;
+unsigned int score;
 bool sword = false;
 
 
@@ -149,7 +148,7 @@ struct enemy {
 };
 unsigned int this_enemy = 0;
 
-struct enemy enemies[1000];
+struct enemy enemies[25];
 
 
 #include "maze.h"
