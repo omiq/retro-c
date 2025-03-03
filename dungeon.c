@@ -202,6 +202,7 @@ unsigned char get_map(char x, char y) {
 void load_room() {
     int pos=0;
     int playable_offsetY, offsetX, offsetY;
+    draw_whole_screen=false;
     playable_offsetY = HUD_TOP;
     offsetX = (MAP_WIDTH - MAZE_WIDTH) / 2;
     offsetY = playable_offsetY + ((PLAYABLE_HEIGHT - MAZE_HEIGHT) / 2);
@@ -230,6 +231,7 @@ void load_room() {
     placeObject('$');
     placeObject('h');
     placeObject('k');
+    placeObject('s'); // spell
     placeHDoor();
     placeVDoor();
 
@@ -539,16 +541,12 @@ void draw_screen() {
         cputcxy(player_x-1,player_y+1,get_map(player_x-1,player_y+1));
         cputcxy(player_x+2,player_y,get_map(player_x+2,player_y));
         cputcxy(player_x-2,player_y,get_map(player_x-2,player_y));
-
         cputcxy(player_x,player_y-2,get_map(player_x,player_y-2));
         cputcxy(player_x,player_y+2,get_map(player_x,player_y+2));
-
         cputcxy(player_x-1,player_y-2,get_map(player_x-1,player_y-2));
         cputcxy(player_x-1,player_y+2,get_map(player_x-1,player_y+2));
         cputcxy(player_x+1,player_y-2,get_map(player_x+1,player_y-2));
         cputcxy(player_x+1,player_y+2,get_map(player_x+1,player_y+2));
-
-
         cputcxy(player_x-2,player_y-1,get_map(player_x-2,player_y-1));
         cputcxy(player_x-2,player_y+1,get_map(player_x-2,player_y+1));
         cputcxy(player_x+2,player_y-1,get_map(player_x+2,player_y-1));
@@ -757,6 +755,11 @@ void game_loop() {
             obstruction=true;
             break;
         
+        // Spell
+        case 's':
+            draw_whole_screen=true;
+            sprintf(output, "you activated a spell");
+            break;
 
         case 'k': // Key +1
             keys+=1;
