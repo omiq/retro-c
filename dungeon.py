@@ -169,12 +169,13 @@ def move_enemies():
 # Main game loop
 def game_loop(screen, images):
     global player_x, player_y, old_x, old_y, direction_x, direction_y, health, score, magic, sword, weapon, keys, idols, room, in_play, run
-
+    pressed = True        
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
             elif event.type == pygame.KEYDOWN:
+                pressed = True
                 if event.key == pygame.K_w:
                     move_player(0, -1)
                 elif event.key == pygame.K_a:
@@ -187,12 +188,14 @@ def game_loop(screen, images):
                     in_play = False
                     run = False
 
-        move_enemies()
+        if pressed: 
+            move_enemies()
+            screen.fill((0, 0, 0))
+            draw_map(screen, images)
+            pygame.display.flip()
+            time.sleep(0.1)
+            pressed = False        
 
-        screen.fill((0, 0, 0))
-        draw_map(screen, images)
-        pygame.display.flip()
-        time.sleep(0.1)
 
 # Main function
 def main():
