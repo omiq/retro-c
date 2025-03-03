@@ -148,7 +148,7 @@ struct enemy {
 };
 unsigned int this_enemy = 0;
 
-struct enemy enemies[25];
+struct enemy enemies[];
 
 
 #include "maze.h"

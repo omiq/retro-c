@@ -143,29 +143,33 @@ def move_player(dx, dy):
     new_x = player_x + dx
     new_y = player_y + dy
     if is_walkable(new_x, new_y):
+        # Clear the player's old position
+        map[player_y][player_x] = '.'
         player_x = new_x
         player_y = new_y
+        # Update the player's new position
+        map[player_y][player_x] = '@'
         print(f"Player moved to ({player_x}, {player_y})")  # Debug print
         # Handle interactions with objects
         tile = map[player_y][player_x]
         if tile == 'i':
             idols += 1
-            map[player_y][player_x] = '.'
+            map[player_y][player_x] = '@'
         elif tile == '$':
             score += 10
-            map[player_y][player_x] = '.'
+            map[player_y][player_x] = '@'
         elif tile == 'h':
             health += 10
-            map[player_y][player_x] = '.'
+            map[player_y][player_x] = '@'
         elif tile == 'k':
             keys += 1
-            map[player_y][player_x] = '.'
+            map[player_y][player_x] = '@'
         elif tile == 's':
             sword = True
-            map[player_y][player_x] = '.'
+            map[player_y][player_x] = '@'
         elif tile == '*':
             potion += 1
-            map[player_y][player_x] = '.'
+            map[player_y][player_x] = '@'
 
 # Move enemies
 def move_enemies():
