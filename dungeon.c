@@ -509,6 +509,23 @@ void move_enemies() {
 
 }
 
+
+// Field of view/fog of war
+void update_fov(int player_x, int player_y, int radius) {
+    for (int dy = -radius; dy <= radius; dy++) {
+        for (int dx = -radius; dx <= radius; dx++) {
+            int x = player_x + dx;
+            int y = player_y + dy;
+
+            // Ensure coordinates are within the map bounds
+            if (x >= 0 && x < MAP_WIDTH && y >= 0 && y < MAP_HEIGHT) {
+                cputcxy(x, y, get_map(x, y));
+            }
+        }
+    }
+}
+
+
 void draw_screen() {
 
    
@@ -522,36 +539,10 @@ void draw_screen() {
                 cputcxy(col,row,get_map(col,row));
             }
         };
+    } else {
+       // Update the screen around the player with a set radius 
+       update_fov(player_x, player_y, 3);
     }
-  
-/*
-.###.
-#####
-##@##
-#####
-.###.
-*/
-        cputcxy(player_x+1,player_y-1,get_map(player_x+1,player_y-1));
-        cputcxy(player_x-1,player_y-1,get_map(player_x-1,player_y-1));
-        cputcxy(player_x-1,player_y,get_map(player_x-1,player_y));
-        cputcxy(player_x+1,player_y,get_map(player_x+1,player_y));
-        cputcxy(player_x,player_y-1,get_map(player_x,player_y-1));
-        cputcxy(player_x,player_y+1,get_map(player_x,player_y+1));
-        cputcxy(player_x+1,player_y+1,get_map(player_x+1,player_y+1));
-        cputcxy(player_x-1,player_y+1,get_map(player_x-1,player_y+1));
-        cputcxy(player_x+2,player_y,get_map(player_x+2,player_y));
-        cputcxy(player_x-2,player_y,get_map(player_x-2,player_y));
-        cputcxy(player_x,player_y-2,get_map(player_x,player_y-2));
-        cputcxy(player_x,player_y+2,get_map(player_x,player_y+2));
-        cputcxy(player_x-1,player_y-2,get_map(player_x-1,player_y-2));
-        cputcxy(player_x-1,player_y+2,get_map(player_x-1,player_y+2));
-        cputcxy(player_x+1,player_y-2,get_map(player_x+1,player_y-2));
-        cputcxy(player_x+1,player_y+2,get_map(player_x+1,player_y+2));
-        cputcxy(player_x-2,player_y-1,get_map(player_x-2,player_y-1));
-        cputcxy(player_x-2,player_y+1,get_map(player_x-2,player_y+1));
-        cputcxy(player_x+2,player_y-1,get_map(player_x+2,player_y-1));
-        cputcxy(player_x+2,player_y+1,get_map(player_x+2,player_y+1));
-
 
 }
 
