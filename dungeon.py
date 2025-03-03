@@ -188,13 +188,16 @@ def move_enemies():
         new_x = enemy.x + step_x
         new_y = enemy.y + step_y
         if is_walkable(new_x, new_y):
+            map[enemy.y][enemy.x] = '.'  # Clear the enemy's old position
             enemy.old_x = enemy.x
             enemy.old_y = enemy.y
             enemy.x = new_x
             enemy.y = new_y
+            map[enemy.y][enemy.x] = enemy.tile  # Update the enemy's new position
         # Check for combat with player
         if enemy.x == player_x and enemy.y == player_y:
             health -= enemy.strength
+            print(f"Player attacked by {enemy.tile} at ({enemy.x}, {enemy.y}). Health: {health}")  # Debug print
 
 # Main game loop
 def game_loop(screen, images):
