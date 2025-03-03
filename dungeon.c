@@ -192,7 +192,7 @@ unsigned char get_map(char x, char y) {
     unsigned char c;
 
     c = game_map[MAP_WIDTH*y+x];
-    if(c==0) {return ' ';}
+    if(c==0) {return '.';}
     return c;
   
 
@@ -295,7 +295,7 @@ void load_room() {
             enemies[enemy_count].armour = 0;
 
         }  
-        if(c=='.') c=' ';
+        //if(c=='.') c=' ';
         game_map[pos] = c;   
         pos++;  
         }
@@ -326,7 +326,7 @@ void set_map(char x, char y, int tile) {
 // Returns the enemy for a given x,y coord
 unsigned int which_enemy(unsigned int ex,unsigned int ey) {
 
-    if(get_map(ex,ey)==' ') return 0;
+    if(get_map(ex,ey)==' '||get_map(ex,ey)=='.') return 0;
 
     // Enemies starts at 1, 0 = no enemy
     for(i=1;i<enemy_count+1;i++)
@@ -387,9 +387,9 @@ void attack(unsigned int weapon, unsigned int ax, unsigned int ay)
         output_message();
         
         // Draw tile in new location
-        cputcxy(ax,ay,' '); 
-        set_map(ax,ay,' ');
-        enemies[this_enemy].tile = ' ';
+        cputcxy(ax,ay,'.'); 
+        set_map(ax,ay,'.');
+        enemies[this_enemy].tile = '.';
 
         // Up the score
         score+=10;
@@ -425,9 +425,9 @@ void enemy_attack(unsigned int this_enemy)
             if(enemies[this_enemy].health<1) {
                enemies[this_enemy].health=0;
                 // Draw tile in new location
-                cputcxy(enemies[this_enemy].x,enemies[this_enemy].y,' '); 
-                set_map(enemies[this_enemy].x,enemies[this_enemy].y,' ');
-                enemies[this_enemy].tile = ' ';
+                cputcxy(enemies[this_enemy].x,enemies[this_enemy].y,'.'); 
+                set_map(enemies[this_enemy].x,enemies[this_enemy].y,'.');
+                enemies[this_enemy].tile = '.';
                 
                 sprintf(output, "enemy defeated!");
                 output_message();
@@ -491,13 +491,13 @@ void move_enemies() {
 
             // Redraw
             c=get_map(enemies[i].x,enemies[i].y);
-            if(c!=' ' || c==enemies[i].tile) {
+            if((c!=' ' && c!='.') || c==enemies[i].tile) {
                 enemies[i].x = enemies[i].old_x;
                 enemies[i].y = enemies[i].old_y;
                 if(c=='@') enemy_attack(i);
             }else{
-                set_map(enemies[i].old_x, enemies[i].old_y, ' ');
-                cputcxy(enemies[i].old_x, enemies[i].old_y, ' ');
+                set_map(enemies[i].old_x, enemies[i].old_y, '.');
+                cputcxy(enemies[i].old_x, enemies[i].old_y, '.');
             }
 
             if(enemies[i].x != enemies[i].old_x || enemies[i].y != enemies[i].old_y) {
@@ -518,8 +518,10 @@ void update_fov(int player_x, int player_y, int radius) {
             int y = player_y + dy;
 
             // Ensure coordinates are within the map bounds
-            if (x >= 0 && x < MAP_WIDTH && y >= 0 && y < MAP_HEIGHT) {
-                cputcxy(x, y, get_map(x, y));
+            if (x >= 0 && x < MAP_WIDTH-3 && y >= 0 && y < PLAYABLE_HEIGHT) {
+                c=get_map(x, y);
+                if(c==' ') c='.';
+                cputcxy(x, y, c);
             }
         }
     }
@@ -541,7 +543,7 @@ void draw_screen() {
         };
     } else {
        // Update the screen around the player with a set radius 
-       update_fov(player_x, player_y, 3);
+       update_fov(player_x, player_y, 2);
     }
 
 }
@@ -569,7 +571,7 @@ void draw_move(bool replace) {
 
     // Delete the player character
     if(!replace) {
-        set_map(old_x, old_y, ' ');
+        set_map(old_x, old_y, '.');
     }
 
     // Draw new location
@@ -677,7 +679,7 @@ unsigned char get_key() {
                     fy = player_y+direction_y;  
 
                     c=get_map(fx,fy);
-                    while(c==' ' && magic > 0) {             
+                    while((c==' '||c=='.') && magic > 0) {             
                         draw_momentary_object(fx,fy,fx,fy,'*',200); 
                         magic-=1;
                         fx = fx+direction_x;
@@ -787,7 +789,7 @@ void game_loop() {
 
             }else{
                 // Not enough keys to unlock!
-                set_map(player_x, player_y, ' ');  // turn into fully open
+                set_map(player_x, player_y, '.');  // turn into fully open
                 health-=10;         // lose 10 health
                 obstruction=true;
                 sprintf(output, "who needs keys anyway?");
@@ -865,7 +867,7 @@ void game_loop() {
             
             // convert integer to ascii: itoa(c,buffer,10);
             
-            if(c!=' ') {
+            if(c!=' ' && c!='.') {
                 // Figure out what the code is for tile
                 gotoxy(0,0);
                 sprintf(output, "bumped into ...... %03d",c);
