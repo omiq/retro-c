@@ -35,7 +35,7 @@ unsigned char key,i,c, weapon;
 unsigned char player_x=19;
 unsigned char player_y=8;
 unsigned char old_x, old_y, direction_x, direction_y, fx, fy;
-unsigned char room=1;
+unsigned char room;
 //unsigned char buffer [sizeof(int)*8+1];
 
 
@@ -166,8 +166,20 @@ char output [MAP_WIDTH];
 
 
 
-
-
+// (re)initialize game
+void init(void) {
+            keys=0;
+            health=100;
+            score=0;
+            keys=0;
+            room=2;
+            potion=0;
+            magic = 0;
+            enemy_count=0;
+            sword=false;
+            weapon = 1;
+            idols=0;
+}
 
 
 
@@ -457,7 +469,7 @@ void move_enemies() {
             enemies[i].old_y = enemies[i].y; 
             
             // Rat is random
-            if(enemies[i].tile == 'r' && is_within_range(player_x, player_y, enemies[i].x, enemies[i].y, 10)) {
+            if(enemies[i].tile == 'r' && is_within_range(player_x, player_y, enemies[i].x, enemies[i].y, 6)) {
                 rnd = (rand() % (4)) + 1; 
                 if(rnd == 4) enemies[i].x-=1;
                 if(rnd == 2) enemies[i].x+=1;
@@ -466,7 +478,7 @@ void move_enemies() {
             }
 
             // Gobbo goes for player
-            if(enemies[i].tile == 'g') {
+            if(enemies[i].tile == 'g' && is_within_range(player_x, player_y, enemies[i].x, enemies[i].y, 6)) {
                 if(enemies[i].x > player_x) enemies[i].x-=1;
                 if(enemies[i].x < player_x) enemies[i].x+=1;
                 if(enemies[i].y > player_y) enemies[i].y-=1;
@@ -475,7 +487,7 @@ void move_enemies() {
 
             // Redraw
             c=get_map(enemies[i].x,enemies[i].y);
-            if(c!=' ') {
+            if(c!=' ' || c==enemies[i].tile) {
                 enemies[i].x = enemies[i].old_x;
                 enemies[i].y = enemies[i].old_y;
                 if(c=='@') enemy_attack(i);
@@ -483,9 +495,11 @@ void move_enemies() {
                 set_map(enemies[i].old_x, enemies[i].old_y, ' ');
                 cputcxy(enemies[i].old_x, enemies[i].old_y, ' ');
             }
-            set_map(enemies[i].x, enemies[i].y, enemies[i].tile);
-            cputcxy(enemies[i].x, enemies[i].y,enemies[i].tile);
-            
+
+            if(enemies[i].x != enemies[i].old_x || enemies[i].y != enemies[i].old_y) {
+                set_map(enemies[i].x, enemies[i].y, enemies[i].tile);
+                cputcxy(enemies[i].x, enemies[i].y,enemies[i].tile);
+            }
         }
     }
 
@@ -853,7 +867,7 @@ void game_loop() {
         // Update message box
         output_message();
         timer=dumb_wait(1000);
-}
+    }
 
     // If obstructed then bounce
     if(obstruction) {
@@ -885,6 +899,7 @@ int main() {
 
     // Titles
     counter = title_screen();
+    init();
 
     // Start running     
     run=true;
@@ -894,17 +909,7 @@ int main() {
 
         // Initialize if not already running a game
         if (in_play != true) {
-            keys=0;
-            health=100;
-            score=0;
-            keys=0;
-            room=1;
-            potion=0;
-            magic = 0;
-            enemy_count=0;
-            sword=false;
-            weapon = 1;
-            idols=0;
+            init();
         }
 
         // Use current time as 
