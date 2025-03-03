@@ -436,6 +436,12 @@ void enemy_attack(unsigned int this_enemy)
 
 }
 
+// How close is the player?
+bool is_within_range(int player_x, int player_y, int enemy_x, int enemy_y, int range) {
+    int dx = enemy_x - player_x;
+    int dy = enemy_y - player_y;
+    return (dx * dx + dy * dy) <= (range * range);
+}
 
 // Move the enemies for a given room
 void move_enemies() {
@@ -451,7 +457,7 @@ void move_enemies() {
             enemies[i].old_y = enemies[i].y; 
             
             // Rat is random
-            if(enemies[i].tile == 'r') {
+            if(enemies[i].tile == 'r' && is_within_range(player_x, player_y, enemies[i].x, enemies[i].y, 10)) {
                 rnd = (rand() % (4)) + 1; 
                 if(rnd == 4) enemies[i].x-=1;
                 if(rnd == 2) enemies[i].x+=1;
@@ -705,8 +711,7 @@ void game_loop() {
     //} Remove comment to make more action than turn-based
 
     
-    sprintf(output, "                                      ");
-    output_message();
+
 
     // Anything in our path?
     obstruction=false;
@@ -741,7 +746,7 @@ void game_loop() {
                 set_map(player_x, player_y, '-'); // turn into partially open
                 health-=10; // lose 10 health
                 obstruction=true;
-                sprintf(output, "out of the way, coming through!");
+                sprintf(output, "ouch!");
             }
             break;
 
@@ -760,6 +765,7 @@ void game_loop() {
                 health-=10;         // lose 10 health
                 obstruction=true;
                 sprintf(output, "who needs keys anyway?");
+                
             }
             break;
 
@@ -775,8 +781,6 @@ void game_loop() {
                 sprintf(output, "+1 to your attack!");
             }
 
-            output_message();
-            timer=dumb_wait(1000);
 
             break;
 
@@ -844,6 +848,12 @@ void game_loop() {
             
             break;
     }
+
+    if(output[1]> 32) {
+        // Update message box
+        output_message();
+        timer=dumb_wait(1000);
+}
 
     // If obstructed then bounce
     if(obstruction) {
