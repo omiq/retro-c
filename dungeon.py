@@ -88,8 +88,8 @@ def load_room():
 
 # Draw the map
 def draw_map(screen, images):
-    for y in range(MAP_HEIGHT):
-        for x in range(MAP_WIDTH):
+    for y in range(PLAYABLE_HEIGHT):
+        for x in range(MAP_WIDTH-3):
             tile = map[y][x]
             if tile in images:
                 screen.blit(images[tile], (x * TILE_SIZE, y * TILE_SIZE))
