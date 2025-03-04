@@ -26,7 +26,7 @@ conversions will then use header files and definitions
 bool run=true;
 bool in_play=false;
 bool obstruction=false;
-
+bool screen_drawn=false;
 unsigned int this_row;
 unsigned int this_col;
 unsigned int timer,delay,counter;
@@ -180,6 +180,7 @@ void init(void) {
             weapon = 1;
             idols=0;
             draw_whole_screen = false;
+            screen_drawn=false;
 }
 
 
@@ -534,13 +535,14 @@ void draw_screen() {
     // Draw whole screen
     int row,col;
 
-    if(draw_whole_screen) {
+    if(draw_whole_screen && screen_drawn == false) {
         for(row=0; row<PLAYABLE_HEIGHT; row++)
         {
             for(col=0; col < MAZE_WIDTH; col++){
                 cputcxy(col,row,get_map(col,row));
             }
         };
+        screen_drawn = true;
     } else {
        // Update the screen around the player with a set radius 
        update_fov(player_x, player_y, 2);
