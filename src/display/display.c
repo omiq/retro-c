@@ -1,0 +1,78 @@
+#include "display.h"
+
+#if defined (__CC65__)
+#include <conio.h>
+#else
+#include "../include/notconio.h"
+#endif
+
+void output_message(void) {
+    char blank[40];
+    sprintf(blank, "%s", "                                      ");
+    cputsxy(0, info_row, blank);
+    cputsxy(1, info_row, output);
+    sprintf(output, "%s", blank);
+    refresh();
+}
+
+void draw_screen(void) {
+    // Draw whole screen
+    int row, col;
+
+    if (draw_whole_screen && screen_drawn == false) {
+        for (row = 0; row < PLAYABLE_HEIGHT; row++) {
+            for (col = 0; col < MAZE_WIDTH; col++) {
+                cputcxy(col, row, get_map(col, row));
+            }
+        }
+        screen_drawn = true;
+    } else {
+        // Update the screen around the player with a set radius 
+        update_fov(player_x, player_y, 2);
+    }
+}
+
+void draw_momentary_object(unsigned int obj_old_x, unsigned int obj_old_y, 
+                          unsigned int obj_x, unsigned int obj_y, 
+                          unsigned int obj_tile, unsigned int delay) {
+    // Replace tile
+    cputcxy(obj_old_x, obj_old_y, get_map(obj_old_x, obj_old_y));
+
+    // Draw tile in new location
+    cputcxy(obj_x, obj_y, obj_tile); 
+   
+    // Delay
+    timer = dumb_wait(delay);
+
+    // Replace tile again
+    cputcxy(obj_x, obj_y, get_map(obj_x, obj_y));
+}
+
+void draw_move(bool replace) {
+    // Delete the player character
+    if (!replace) {
+        set_map(old_x, old_y, '.');
+    }
+
+    // Draw new location
+    cputcxy(old_x, old_y, get_map(old_x, old_y));
+    cputcxy(player_x, player_y, 64); 
+    set_map(player_x, player_y, 64);
+}
+
+void update_fov(int player_x, int player_y, int radius) {
+    int dy, dx;
+    for (dy = -radius; dy <= radius; dy++) {
+        for (dx = -radius; dx <= radius; dx++) {
+            int x = player_x + dx;
+            int y = player_y + dy;
+
+            // Ensure coordinates are within the map bounds
+            if (x >= 0 && x < MAP_WIDTH-3 && y >= 0 && y < PLAYABLE_HEIGHT) {
+                c = get_map(x, y);
+                if (c == ' ') c = '.';
+                cputcxy(x, y, c);
+            }
+        }
+    }
+} 
