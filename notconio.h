@@ -45,7 +45,7 @@ void cputcxy(unsigned int x, unsigned int y, char outString)
 }
 
 /* Put string at coordinate */
-void cputsxy(unsigned int x, unsigned int y, char outString[255])
+void cputsxy(unsigned int x, unsigned int y, char outString[40])
 {
     mvprintw(y, x, "%s", outString);
 }
