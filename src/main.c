@@ -62,5 +62,7 @@ int main() {
     sprintf(output, "goodbye!\n\n");
     output_message();
     cursor(1);
+    endwin();
+    resetterm();
     return(0);
 } 
