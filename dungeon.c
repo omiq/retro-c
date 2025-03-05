@@ -227,7 +227,7 @@ void load_room() {
     for(i=0; i<room+1; i++) placeObject('r');
 
     placeObject('*');
-    placeObject('/');
+    placeObject('|');
     placeObject('$');
     placeObject('h');
     placeObject('k');
@@ -799,7 +799,7 @@ void game_loop() {
             }
             break;
 
-        case '/': // Sword!
+        case '|': // Sword!
             sword=true;
             
             if(weapon<5) {
