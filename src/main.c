@@ -10,7 +10,7 @@
 #include "input/input.h"
 #include "screens/screens.h"
 
-#if defined (__CC65__)
+#ifdef __CC65__
 #include <conio.h>
 #else
 #include "include/notconio.h"
@@ -62,7 +62,11 @@ int main() {
     sprintf(output, "goodbye!\n\n");
     output_message();
     cursor(1);
-    endwin();
-    resetterm();
+
+    #ifndef __CC65__
+        endwin();
+        resetterm();
+    #endif
+        
     return(0);
 } 

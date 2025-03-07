@@ -1,4 +1,9 @@
+
+#ifdef __CC65__
+#include <conio.h>
+#else
 #include "notconio.h"
+#endif
 
 /* Turn on/off the cursor */
 void cursor(char onoff) {

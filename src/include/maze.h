@@ -31,4 +31,9 @@ void pop(Cell *out_cell);
 int isEmpty(void);
 void shuffle(int *array, int n);
 
+#ifdef __CC65__
+typedef unsigned long time_t;
+time_t time(time_t* t);
+#endif
+
 #endif /* MAZE_H */ 
