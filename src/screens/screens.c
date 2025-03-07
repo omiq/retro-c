@@ -10,6 +10,14 @@
 
 // This is the default title screen
 int title_screen(void) {
+
+    // if c64 then set the background color to black and the text to green
+    #ifdef __C64__
+        bgcolor(0);
+        bordercolor(0);
+        textcolor(5);
+    #endif
+
     clrscr();
     
     sprintf(output, "pet dungeon");
