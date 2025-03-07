@@ -1,7 +1,13 @@
+// cl65 -t c64 -v -o chars.prg charset-c64.c && x64sc chars.prg
+
+
+
 #include <stdio.h>
 #include <peekpoke.h>
 #include <string.h>
 #include <conio.h>
+
+// Custom character set data - 8x8 pixel patterns for each character
 unsigned char chars[]={
         0x5C,0x57,0xE9,0x59,0x39,0x1E,0x14,0x36,
 0x10,0x28,0x28,0x44,0x7C,0x44,0xEE,0x00,
@@ -264,19 +270,51 @@ unsigned char chars[]={
 
 unsigned int key,i,x,y;
 
+// Initialize the PETSCII character set (0-255) in screen memory
 void petscii() {
 
+
+    // Set the screen colours (green on black)
+    bgcolor(0);
+    bordercolor(0);
+    textcolor(5);
+
+
+    // Clear the screen
     clrscr();
+
+    // Output each character to screen memory
     for(i=51200;i<51200+256;i++) {
         POKE(i,i-51200);
     }
 }
 
 void main() {
-        memcpy(49152,&chars,sizeof(chars)); // load character data 
-        POKE(56576,PEEK(57576)&252);
-        POKE(53272,32); // $3000 would be POKE(53272,(PEEK(53272)&240)+12);
-        POKE(648,200);
-        petscii();
-        key=cgetc();
+    // Load our custom character set into memory at $C000 (49152)
+    // This is where the VIC-II will look for character definitions
+    memcpy(49152,&chars,sizeof(chars)); 
+
+    // Configure the C64's memory layout for custom character set:
+    
+    // 1. Set up RAM bank for character ROM access
+    // CIA2 port A (56576) controls RAM bank selection
+    // Mask with 252 (11111100) to select the correct bank for $C000
+    POKE(56576,PEEK(57576)&252);
+
+    // 2. Configure VIC-II to use our custom character set
+    // 53272 is the VIC-II control register for character ROM location
+    // Setting to 32 tells VIC-II to use character ROM at $2000 (8192)
+    // This points to our custom character set loaded at $C000
+    POKE(53272,32); 
+
+    // 3. Set the cursor character to use our custom character set
+    // 648 is the cursor character location in memory
+    // Setting to 200 makes cursor use character code 200 from our set
+    POKE(648,200);
+
+    // Output the redefined PETSCII characters to screen memory
+    petscii();
+
+    // Wait for a key press before exiting
+    key=cgetc();
 }
