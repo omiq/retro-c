@@ -16,7 +16,7 @@ void init(void) {
     health = 100;
     score = 0;
     keys = 0;
-    room = 2;
+    room = 1;
     potion = 0;
     magic = 0;
     enemy_count = 0;
@@ -43,11 +43,10 @@ void set_map(char x, char y, int tile) {
 
 void load_room(void) {
     int pos = 0;
-    int playable_offsetY, offsetX, offsetY;
     draw_whole_screen = false;
-    playable_offsetY = HUD_TOP;
-    offsetX = (MAP_WIDTH - MAZE_WIDTH) / 2;
-    offsetY = playable_offsetY + ((PLAYABLE_HEIGHT - MAZE_HEIGHT) / 2);
+    //playable_offsetY = HUD_TOP;
+    //offsetX = (MAP_WIDTH - MAZE_WIDTH) / 2;
+    //offsetY = playable_offsetY + ((PLAYABLE_HEIGHT - MAZE_HEIGHT) / 2);
 
     clrscr();
     
