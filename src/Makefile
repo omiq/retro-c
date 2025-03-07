@@ -29,8 +29,8 @@ DESKTOP_TARGET = dungeonDesktop
 PET_TARGET = dungeonPET.prg
 C64_TARGET = dungeon64.prg
 
-# Default target
-all: desktop
+# Default target - build all platforms
+all: desktop pet c64
 
 # Desktop target using GCC
 desktop: $(DESKTOP_OBJ)
@@ -44,7 +44,8 @@ pet: $(COMMON_SRC)
 c64: $(COMMON_SRC)
 	$(CL65) -t c64 -v -Cl -O -DCC65_NO_RUNTIME_TYPE_CHECKS -o $(C64_TARGET) $(COMMON_SRC)
 
-%.o: %.c
+# Object file rule for desktop builds only
+$(DESKTOP_OBJ): %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
