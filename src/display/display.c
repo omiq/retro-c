@@ -14,11 +14,12 @@ char     translate_char(char c) {
     switch(c) {
         case 'h': return 'S';
         case 'i': return 'X';
-        case '+': return '?'; 
+        case '+': return 'B'; 
         case '*': return 'Q';
         case 'k': return '%';
         case 'g': return '&';
         case 'r': return 126;
+        case '|': return '^';
         default: return c;
     }
     #else
