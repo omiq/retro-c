@@ -6,6 +6,44 @@
 #include "../include/notconio.h"
 #endif
 
+// Lookup table for translating characters to the new character set
+
+char     translate_char(char c) {
+    // Translate characters to the new character set using a switch statement
+    #ifdef __C64__
+    switch(c) {
+        case 'h': return 'S';
+        case 'i': return 'X';
+        case '+': return '?'; 
+        case '*': return 'Q';
+        case 'k': return '%';
+        case 'g': return '&';
+
+        default: return c;
+    }
+    #else
+    return c;
+    #endif
+}   
+
+
+
+// Translate the character C to a selected character from the 
+// new character set using a lookup table but only for c64 currently
+void translate_cputcxy(int col, int row, char c) {
+
+    // if c64 then translate the character
+    #ifdef __C64__
+        c = translate_char(c);
+    #else
+        // pass to cputcxy without changes
+    #endif
+
+    cputcxy(col, row, c);   
+
+}
+
+
 void output_message(void) {
     char blank[40];
     sprintf(blank, "%s", "                                      ");
@@ -22,7 +60,7 @@ void draw_screen(void) {
     if (draw_whole_screen && screen_drawn == false) {
         for (row = 0; row < PLAYABLE_HEIGHT; row++) {
             for (col = 0; col < MAZE_WIDTH; col++) {
-                cputcxy(col, row, get_map(col, row));
+                translate_cputcxy(col, row, get_map(col, row));
             }
         }
         screen_drawn = true;
@@ -36,16 +74,16 @@ void draw_momentary_object(unsigned int obj_old_x, unsigned int obj_old_y,
                           unsigned int obj_x, unsigned int obj_y, 
                           unsigned int obj_tile, unsigned int delay) {
     // Replace tile
-    cputcxy(obj_old_x, obj_old_y, get_map(obj_old_x, obj_old_y));
+    translate_cputcxy(obj_old_x, obj_old_y, get_map(obj_old_x, obj_old_y));
 
     // Draw tile in new location
-    cputcxy(obj_x, obj_y, obj_tile); 
+    translate_cputcxy(obj_x, obj_y, obj_tile); 
    
     // Delay
     timer = dumb_wait(delay);
 
     // Replace tile again
-    cputcxy(obj_x, obj_y, get_map(obj_x, obj_y));
+    translate_cputcxy(obj_x, obj_y, get_map(obj_x, obj_y));
 }
 
 void draw_move(bool replace) {
@@ -55,8 +93,8 @@ void draw_move(bool replace) {
     }
 
     // Draw new location
-    cputcxy(old_x, old_y, get_map(old_x, old_y));
-    cputcxy(player_x, player_y, 64); 
+    translate_cputcxy(old_x, old_y, get_map(old_x, old_y));
+    translate_cputcxy(player_x, player_y, 64); 
     set_map(player_x, player_y, 64);
 }
 
@@ -71,7 +109,7 @@ void update_fov(int player_x, int player_y, int radius) {
             if (x >= 0 && x < MAP_WIDTH-3 && y >= 0 && y < PLAYABLE_HEIGHT) {
                 c = get_map(x, y);
                 if (c == ' ') c = '.';
-                cputcxy(x, y, c);
+                translate_cputcxy(x, y, c);
             }
         }
     }
