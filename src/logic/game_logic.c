@@ -278,12 +278,12 @@ void move_enemies(void) {
                 if (c == '@') enemy_attack(i);
             } else {
                 set_map(enemies[i].old_x, enemies[i].old_y, '.');
-                cputcxy(enemies[i].old_x, enemies[i].old_y, '.');
+                translate_cputcxy(enemies[i].old_x, enemies[i].old_y, '.');
             }
 
             if (enemies[i].x != enemies[i].old_x || enemies[i].y != enemies[i].old_y) {
                 set_map(enemies[i].x, enemies[i].y, enemies[i].tile);
-                cputcxy(enemies[i].x, enemies[i].y, enemies[i].tile);
+                translate_cputcxy(enemies[i].x, enemies[i].y, enemies[i].tile);
             }
         }
     }

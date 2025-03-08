@@ -18,7 +18,7 @@ char     translate_char(char c) {
         case '*': return 'Q';
         case 'k': return '%';
         case 'g': return '&';
-
+        case 'r': return 126;
         default: return c;
     }
     #else

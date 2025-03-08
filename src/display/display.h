@@ -14,4 +14,7 @@ void draw_momentary_object(unsigned int obj_old_x, unsigned int obj_old_y,
 void draw_move(bool replace);
 void update_fov(int player_x, int player_y, int radius);
 
+void translate_cputcxy(int col, int row, char c);
+
+
 #endif /* DISPLAY_H */ 
