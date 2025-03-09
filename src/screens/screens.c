@@ -11,9 +11,21 @@
 #include "../include/notconio.h"
 #endif
 
-    unsigned char showing_titles;
-    unsigned char need_clear;
+    unsigned char show_titles;
 
+
+unsigned char logo[] = {
+       46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46,
+ 35, 35, 35, 35, 46, 46, 35, 46, 46, 35, 46, 35, 46, 46, 46, 35, 46, 46, 35, 35, 35, 35, 46, 46, 35, 35, 35, 35, 46, 46, 35, 35, 35, 46, 46, 35, 46, 46, 46, 35,
+ 46, 35, 46, 46, 35, 46, 35, 46, 46, 35, 46, 35, 35, 46, 46, 35, 46, 35, 46, 46, 46, 46, 35, 46, 35, 46, 46, 46, 46, 35, 46, 46, 46, 35, 46, 35, 35, 46, 46, 35,
+ 46, 35, 46, 46, 35, 46, 35, 46, 46, 35, 46, 35, 46, 35, 46, 35, 46, 35, 46, 46, 46, 46, 46, 46, 35, 35, 46, 46, 46, 35, 46, 46, 46, 35, 46, 35, 46, 35, 46, 35,
+ 46, 35, 46, 46, 35, 46, 35, 46, 46, 35, 46, 35, 46, 46, 35, 35, 46, 35, 46, 35, 35, 35, 35, 46, 35, 46, 46, 46, 46, 35, 46, 46, 46, 35, 46, 35, 46, 46, 35, 35,
+ 46, 35, 46, 46, 35, 46, 35, 46, 46, 35, 46, 35, 46, 46, 46, 35, 46, 35, 46, 46, 46, 46, 35, 46, 35, 46, 46, 46, 46, 35, 46, 46, 46, 35, 46, 35, 46, 46, 46, 35,
+ 35, 35, 35, 35, 46, 46, 46, 35, 35, 46, 46, 35, 46, 46, 46, 35, 46, 46, 35, 35, 35, 35, 46, 46, 35, 35, 35, 35, 46, 46, 35, 35, 35, 46, 46, 35, 46, 46, 46, 35,
+ 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46,
+ 
+ 
+    };
 
 #ifdef __C64__
 // Custom character set data - 8x8 pixel patterns for each character
@@ -305,22 +317,29 @@ void center_text(unsigned char row, char *text) {
 
 
 void display_titles(void) {
-  
+    // Show the word DUNGEON using the custom character set
+    char line[41];  // 40 chars plus null terminator
+    int row;
     
+    // Output the logo line by line
+    for (row = 0; row < 8; row++) {
+        // Copy 40 characters from the logo array into our line buffer
+        memcpy(line, &logo[row * 40], 40);
+        line[40] = '\0';  // Null terminate the string
+        cputsxy(0, row, line);
+    }
+
     #ifdef __C64__
         sprintf(output, "c64 dungeon");
     #elif __PET__
         sprintf(output, "pet dungeon");
     #else
         sprintf(output, "The Dungeon");
-
     #endif
-
     
     center_text(10, output);
     center_text(15, "a game by retrogamecoders.com");
     center_text(20, "press a key");
-
 }
 
 void display_instructions(void) {
@@ -344,30 +363,33 @@ int title_screen(void) {
     #endif
 
     counter = 0;
+    show_titles = 1;
+    clrscr();
+   
 
-    showing_titles = 1;
-    need_clear = 1;
     
     while (!kbhit()) { 
-        counter++; 
+        
         
         // Switch display every 500 ticks
-        if (counter >= 500) {
+        if (counter >= 250) {
             counter = 0;
-            showing_titles = !showing_titles;
-            need_clear = 1;
-        }
-        
-        if (need_clear) {
             clrscr();
-            need_clear = 0;
+            show_titles = !show_titles;
+        } else {
+          counter++; 
+//          gotoxy(0,0);
+ //         printf("counter: %d", counter);
         }
+
         
-        if (showing_titles) {
+        if (show_titles) {
             display_titles();
         } else {
             display_instructions();
         }
+
+        
     }
     
     in_play = true;
