@@ -43,6 +43,10 @@ void set_map(char x, char y, int tile) {
 
 void load_room(void) {
     int pos = 0;
+    player_x = -1;
+    player_y = -1;
+    old_x = -1;
+    old_y = -1;
     draw_whole_screen = false;
     screen_drawn = false;
     //playable_offsetY = HUD_TOP;
@@ -94,6 +98,9 @@ void load_room(void) {
             if (c == '@') {
                 player_y = this_row;
                 player_x = this_col;
+                old_y = this_row;
+                old_x = this_col;
+
             }
 
             // Goblin

@@ -306,13 +306,13 @@ int title_screen(void) {
     clrscr();
     
     sprintf(output, "pet dungeon");
-    cputsxy(11, 10, output);
+    cputsxy((40-12)/2, 10, output);
     
     sprintf(output, "a game by retrogamecoders.com");
-    cputsxy(2, 15, output);
+    cputsxy(5, 15, output);
     
     sprintf(output, "press a key");
-    cputsxy(12, 20, output);
+    cputsxy(14, 20, output);
 
     counter = 0;
     while (!kbhit()) { counter++; }
