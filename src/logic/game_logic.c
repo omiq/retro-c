@@ -44,6 +44,7 @@ void set_map(char x, char y, int tile) {
 void load_room(void) {
     int pos = 0;
     draw_whole_screen = false;
+    screen_drawn = false;
     //playable_offsetY = HUD_TOP;
     //offsetX = (MAP_WIDTH - MAZE_WIDTH) / 2;
     //offsetY = playable_offsetY + ((PLAYABLE_HEIGHT - MAZE_HEIGHT) / 2);
@@ -291,9 +292,9 @@ void move_enemies(void) {
 
 void game_loop(void) {
     #ifdef __C64__
-        sprintf(output, "    %%: %02d S: %03d Q: %03d score: %04d", keys, health, magic, score);
+        sprintf(output, "      %%:%02d S:%03d Q:%03d score:%04d", keys, health, magic, score);
     #else
-        sprintf(output, "    k: %02d h: %03d *: %03d score: %04d", keys, health, magic, score);
+        sprintf(output, "      k:%02d h:%03d *:%03d score:%04d", keys, health, magic, score);
     #endif
 
     cputsxy(0, MAP_HEIGHT-1, output);
