@@ -320,8 +320,8 @@ int title_screen(void) {
 
     #endif
 
-
-
+    
+    center_text(10, output);
     center_text(15, "a game by retrogamecoders.com");
     center_text(20, "press a key");
     
