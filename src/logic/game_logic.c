@@ -290,7 +290,12 @@ void move_enemies(void) {
 }
 
 void game_loop(void) {
-    sprintf(output, "    k: %02d h: %03d *: %03d score: %04d", keys, health, magic, score);
+    #ifdef __C64__
+        sprintf(output, "    %%: %02d S: %03d Q: %03d score: %04d", keys, health, magic, score);
+    #else
+        sprintf(output, "    k: %02d h: %03d *: %03d score: %04d", keys, health, magic, score);
+    #endif
+
     cputsxy(0, MAP_HEIGHT-1, output);
     refresh();
 
