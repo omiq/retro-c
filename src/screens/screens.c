@@ -305,8 +305,17 @@ int title_screen(void) {
 
     clrscr();
     
-    sprintf(output, "pet dungeon");
-    cputsxy((40-12)/2, 10, output);
+    #ifdef __C64__
+        sprintf(output, "c64 dungeon");
+    #elif __PET__
+        sprintf(output, "pet dungeon");
+    #else
+        sprintf(output, "The Dungeon");
+
+    #endif
+
+
+    cputsxy(14, 10, output);
     
     sprintf(output, "a game by retrogamecoders.com");
     cputsxy(5, 15, output);
@@ -323,20 +332,20 @@ int title_screen(void) {
 
 bool game_over(void) {
     clrscr();
-    sprintf(output, " game over\n\n");
+    sprintf(output, "game over");
     cputsxy(15, 10, output);
     refresh();
     timer = dumb_wait(1000);
-    sprintf(output, " ah, such a shame,");
-    cputsxy(16, 12, output);
+    sprintf(output, "ah, such a shame,");
+    cputsxy(11, 12, output);
     sprintf(output, "you were doing so well!");
-    cputsxy(16, 14, output);
+    cputsxy(13, 14, output);
     timer = dumb_wait(1000);
     refresh();
-    sprintf(output, " score:%03d", score);
-    cputsxy(20, 18, output);
-    sprintf(output, " play again (y/n)?");
-    cputsxy(20, 19, output);
+    sprintf(output, "score:%03d", score);
+    cputsxy(14, 18, output);
+    sprintf(output, "play again (y/n)?");
+    cputsxy(11, 19, output);
     refresh();
     key = cgetc();
     in_play = false;
