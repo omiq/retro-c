@@ -1,7 +1,7 @@
 #include "screens.h"
 #include "../display/display.h"
 #include "../input/input.h"
-
+#include <stdbool.h>
 #if defined (__CC65__)
 #include <conio.h>
 #include <stdio.h>
@@ -10,6 +10,10 @@
 #else
 #include "../include/notconio.h"
 #endif
+
+    unsigned char showing_titles;
+    unsigned char need_clear;
+
 
 #ifdef __C64__
 // Custom character set data - 8x8 pixel patterns for each character
@@ -299,17 +303,9 @@ void center_text(unsigned char row, char *text) {
     refresh();
 }
 
-// This is the default title screen
-int title_screen(void) {
-    // if c64 then set the background color to black and the text to green
-    #ifdef __C64__
-        bgcolor(0);
-        bordercolor(0);
-        textcolor(5);
-        setup_charset();
-    #endif
 
-    clrscr();
+void display_titles(void) {
+  
     
     #ifdef __C64__
         sprintf(output, "c64 dungeon");
@@ -324,10 +320,56 @@ int title_screen(void) {
     center_text(10, output);
     center_text(15, "a game by retrogamecoders.com");
     center_text(20, "press a key");
-    
-    
+
+}
+
+void display_instructions(void) {
+  
+  center_text(6, "instructions");
+  center_text(12, "use the wasd keys to move");
+  center_text(14, "collect the treasure");
+  center_text(16, "avoid the monsters");
+  center_text(20, "press a key to start");
+}
+
+
+// This is the default title screen
+int title_screen(void) {
+    // if c64 then set the background color to black and the text to green
+    #ifdef __C64__
+        bgcolor(0);
+        bordercolor(0);
+        textcolor(5);
+        setup_charset();
+    #endif
+
     counter = 0;
-    while (!kbhit()) { counter++; }
+
+    showing_titles = 1;
+    need_clear = 1;
+    
+    while (!kbhit()) { 
+        counter++; 
+        
+        // Switch display every 500 ticks
+        if (counter >= 500) {
+            counter = 0;
+            showing_titles = !showing_titles;
+            need_clear = 1;
+        }
+        
+        if (need_clear) {
+            clrscr();
+            need_clear = 0;
+        }
+        
+        if (showing_titles) {
+            display_titles();
+        } else {
+            display_instructions();
+        }
+    }
+    
     in_play = true;
     clrscr();
     return counter;
