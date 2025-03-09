@@ -293,6 +293,12 @@ static void setup_charset(void) {
 }
 #endif
 
+void center_text(unsigned char row, char *text) {
+    sprintf(output, "%s", text);
+    cputsxy((40-strlen(text))/2, row, output);
+    refresh();
+}
+
 // This is the default title screen
 int title_screen(void) {
     // if c64 then set the background color to black and the text to green
@@ -332,21 +338,18 @@ int title_screen(void) {
 
 bool game_over(void) {
     clrscr();
-    sprintf(output, "game over");
-    cputsxy(15, 10, output);
-    refresh();
+    center_text(10, "game over");
+    
     timer = dumb_wait(1000);
-    sprintf(output, "ah, such a shame,");
-    cputsxy(11, 12, output);
-    sprintf(output, "you were doing so well!");
-    cputsxy(13, 14, output);
+
+    center_text(12, "ah, such a shame,");
+    center_text(14, "you were doing so well!");
     timer = dumb_wait(1000);
-    refresh();
+    
     sprintf(output, "score:%03d", score);
-    cputsxy(14, 18, output);
-    sprintf(output, "play again (y/n)?");
-    cputsxy(11, 19, output);
-    refresh();
+    center_text(18, output);
+    center_text(19, "play again (y/n)?");
+    
     key = cgetc();
     in_play = false;
     if (key == 'n') {
