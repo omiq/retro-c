@@ -321,14 +321,11 @@ int title_screen(void) {
     #endif
 
 
-    cputsxy(14, 10, output);
-    
-    sprintf(output, "a game by retrogamecoders.com");
-    cputsxy(5, 15, output);
-    
-    sprintf(output, "press a key");
-    cputsxy(14, 20, output);
 
+    center_text(15, "a game by retrogamecoders.com");
+    center_text(20, "press a key");
+    
+    
     counter = 0;
     while (!kbhit()) { counter++; }
     in_play = true;
