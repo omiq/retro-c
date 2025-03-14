@@ -7,6 +7,10 @@ bool obstruction = false;
 bool screen_drawn = false;
 bool draw_whole_screen = false;
 
+char reverse_on[40]="\033[7m";
+char reverse_off[40]="\033[m";
+
+
 // Player variables
 unsigned char player_x = 19;
 unsigned char player_y = 8;

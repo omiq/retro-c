@@ -7,6 +7,7 @@
 #endif
 
 
+#ifndef __CC65__
 void sleep_ms(int milliseconds)
 {
     #ifdef WIN32
@@ -20,7 +21,7 @@ void sleep_ms(int milliseconds)
         usleep(milliseconds * 1000);
     #endif
 }
-
+#endif
 // Lookup table for translating characters to the new character set
 
 char     translate_char(char c) {
@@ -64,31 +65,7 @@ void output_message(void) {
     char blank[40];
     sprintf(blank, "%s", "                                      ");
     cputsxy(0, info_row, blank);
-    
-    // If output contains "ouch" then we will
-    // selectively modify the output otherwise just
-    // use cputxy to print the output
-    if (strstr(output, "ouch") != NULL) {
-        cputsxy(1, info_row, output);
-        timer = dumb_wait(2500);
-        cputsxy(0, info_row, blank);
-        timer = dumb_wait(2500);
-        revers(1);
-        cputsxy(1, info_row, output);
-        timer = dumb_wait(2500);
-        cputsxy(0, info_row, blank);
-        timer = dumb_wait(2500);
-        revers(0);
-        cputsxy(1, info_row, output);
-        timer = dumb_wait(2500);
-        cputsxy(0, info_row, blank);    
-        timer = dumb_wait(2500);
-        cputsxy(1, info_row, output);
-    
-    
-    } else {
-        cputsxy(1, info_row, output);
-    }
+    cputsxy(1, info_row, output);
 
     // Clear the output message
     sprintf(output, "%s", blank);

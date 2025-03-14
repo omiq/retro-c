@@ -49,12 +49,12 @@ int kbhit(void) {
 }
 
 unsigned int dumb_wait(unsigned int delay) {
-    // Storing start time
-    clock_t start_time = clock();
-    int counter = 0;
-    // looping till required time is not achieved
-    while (clock() < start_time + delay*250)
-        counter++;
+    if(delay<=1000) {
+        sleep_ms(delay);
+    } else {
+        sleep_ms(200);
+    }
+    
     return delay;
 }
 #endif

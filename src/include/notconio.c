@@ -13,9 +13,9 @@ void cursor(char onoff) {
 
 void revers(char onoff) {
     if (onoff) {
-        attron(A_REVERSE);
+        printf("\033[7m");
     } else {
-        attroff(A_REVERSE);
+        printf("\033[m");
     }
 }
  

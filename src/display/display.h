@@ -7,6 +7,7 @@
 
 void sleep_ms(int milliseconds);
 
+
 // Display functions
 void output_message(void);
 void draw_screen(void);

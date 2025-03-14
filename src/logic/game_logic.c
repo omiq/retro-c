@@ -236,10 +236,10 @@ void enemy_attack(unsigned int this_enemy) {
         } else {
             health -= enemies[this_enemy].strength;
         }    
-        
         sprintf(output, "ouch! health: %3d", health);
         output_message();
-        
+
+            
         timer = dumb_wait(1000);
     } else {
         enemies[this_enemy].health -= 5;
