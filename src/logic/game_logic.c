@@ -74,7 +74,7 @@ void load_room(void) {
     for (i = 0; i < room+1; i++) placeObject('r');
     
     // Always place 3 skeletons for testing
-    for (i = 0; i < 3; i++) placeObject('&');
+    for (i = 0; i < 3; i++) placeSkeleton('&');
 
     placeObject('*');
     placeObject('|');
@@ -239,6 +239,7 @@ void enemy_attack(unsigned int this_enemy) {
         
         sprintf(output, "ouch! health: %3d", health);
         output_message();
+        
         timer = dumb_wait(1000);
     } else {
         enemies[this_enemy].health -= 5;

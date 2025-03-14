@@ -7,6 +7,7 @@
 void carveMaze(void);
 void placePlayer(void);
 void placeObject(unsigned char tile);
+void placeSkeleton(unsigned char tile);
 void placeHDoor(void);
 void placeVDoor(void);
 

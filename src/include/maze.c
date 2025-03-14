@@ -202,6 +202,13 @@ void placeObject(unsigned char tile) {
     map[row][col] = tile;
 }
 
+/* Place a skeleton in a random valid position with extra space around it for patrolling.
+   The candidate cell must be a '.' with '.' in a larger area around it. */
+void placeSkeleton(unsigned char tile) {
+    // Just use the same approach as placeObject for now
+    placeObject(tile);
+}
+
 void placeHDoor(void) {
     int row, col;
     unsigned char tile;
