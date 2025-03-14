@@ -1,10 +1,25 @@
 #include "display.h"
-
+#include <string.h>
 #if defined (__CC65__)
 #include <conio.h>
 #else
 #include "../include/notconio.h"
 #endif
+
+
+void sleep_ms(int milliseconds)
+{
+    #ifdef WIN32
+        Sleep(milliseconds);
+    #elif _POSIX_C_SOURCE >= 199309L
+        struct timespec ts;
+        ts.tv_sec = milliseconds / 1000;
+        ts.tv_nsec = (milliseconds % 1000) * 1000000;
+        nanosleep(&ts, NULL);
+    #else
+        usleep(milliseconds * 1000);
+    #endif
+}
 
 // Lookup table for translating characters to the new character set
 
@@ -49,7 +64,33 @@ void output_message(void) {
     char blank[40];
     sprintf(blank, "%s", "                                      ");
     cputsxy(0, info_row, blank);
-    cputsxy(1, info_row, output);
+    
+    // If output contains "ouch" then we will
+    // selectively modify the output otherwise just
+    // use cputxy to print the output
+    if (strstr(output, "ouch") != NULL) {
+        cputsxy(1, info_row, output);
+        timer = dumb_wait(2500);
+        cputsxy(0, info_row, blank);
+        timer = dumb_wait(2500);
+        revers(1);
+        cputsxy(1, info_row, output);
+        timer = dumb_wait(2500);
+        cputsxy(0, info_row, blank);
+        timer = dumb_wait(2500);
+        revers(0);
+        cputsxy(1, info_row, output);
+        timer = dumb_wait(2500);
+        cputsxy(0, info_row, blank);    
+        timer = dumb_wait(2500);
+        cputsxy(1, info_row, output);
+    
+    
+    } else {
+        cputsxy(1, info_row, output);
+    }
+
+    // Clear the output message
     sprintf(output, "%s", blank);
     refresh();
 }

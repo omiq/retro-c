@@ -5,6 +5,8 @@
 #include "../logic/game_logic.h"
 #include "../input/input.h"
 
+void sleep_ms(int milliseconds);
+
 // Display functions
 void output_message(void);
 void draw_screen(void);

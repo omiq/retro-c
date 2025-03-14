@@ -9,6 +9,7 @@
 #include <string.h>
 #else
 #include "../include/notconio.h"
+#include <string.h>
 #endif
 
     unsigned char show_titles;
@@ -135,7 +136,7 @@ static const unsigned char chars[] = {
 204,135, 48,102,  8,147,199, 70,
   3,  3,  3,  3,  3,  3,  3,  3,
   0,  0,  0,  0,131, 92,100,171,
-255,254,252,248,240,224,192,128,
+255,248,240,224,192,128,128,128,
   3,  3,  3,  3,  3,  3,  3,  3,
  24, 24, 24, 31, 31, 24, 24, 24,
   0,  0,  0,  0, 15, 15, 15, 15,
@@ -378,6 +379,11 @@ int title_screen(void) {
             show_titles = !show_titles;
         } else {
           counter++; 
+          
+          // if desktop version add time delay using sleep_ms(int milliseconds)
+         #if !defined(__CC65__)
+          sleep_ms(50);
+         #endif
 //          gotoxy(0,0);
  //         printf("counter: %d", counter);
         }

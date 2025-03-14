@@ -10,6 +10,14 @@ void cursor(char onoff) {
     curs_set(onoff);
     refresh();
 }
+
+void revers(char onoff) {
+    if (onoff) {
+        attron(A_REVERSE);
+    } else {
+        attroff(A_REVERSE);
+    }
+}
  
 /* Clear screen and set up Curses */
 void clrscr(void) {
