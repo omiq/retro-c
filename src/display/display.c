@@ -33,7 +33,7 @@ char     translate_char(char c) {
         case '+': return 'B'; 
         case '*': return 'Q';
         case 'k': return '%';
-        case 'g': return '&';
+        case 'g': return 169;
         case 'r': return 126;
         case '|': return '^';
         default: return c;
