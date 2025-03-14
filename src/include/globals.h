@@ -54,6 +54,9 @@ struct enemy {
     unsigned char strength;
     unsigned char speed;
     unsigned char armour;
+    // Fields for enhanced enemy behaviors
+    unsigned char patrol_direction;
+    signed char patrol_step;
 };
 
 extern struct enemy enemies[25];

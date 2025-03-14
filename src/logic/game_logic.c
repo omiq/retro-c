@@ -10,6 +10,8 @@
 #include <time.h>
 #endif
 
+#include <stdlib.h> // For abs function
+
 // (re)initialize game
 void init(void) {
     keys = 0;
@@ -70,6 +72,9 @@ void load_room(void) {
     
     // Increase rats per room level   
     for (i = 0; i < room+1; i++) placeObject('r');
+    
+    // Always place 3 skeletons for testing
+    for (i = 0; i < 3; i++) placeObject('&');
 
     placeObject('*');
     placeObject('|');
@@ -137,6 +142,25 @@ void load_room(void) {
                 enemies[enemy_count].speed = 2;
                 enemies[enemy_count].armour = 0;
             }  
+            // Skeleton
+            else if (c == '&') {
+                // Increment for next enemy (Enemy 0 is counted as no enemy)
+                enemy_count += 1;
+
+                // Create the enemy in the list
+                enemies[enemy_count].tile = c;
+                enemies[enemy_count].room = room;
+                enemies[enemy_count].x = this_col;
+                enemies[enemy_count].y = this_row;
+                enemies[enemy_count].old_x = enemies[enemy_count].x;
+                enemies[enemy_count].old_y = enemies[enemy_count].y;
+                enemies[enemy_count].health = 25;
+                enemies[enemy_count].strength = 10;
+                enemies[enemy_count].speed = 1;
+                enemies[enemy_count].armour = 5;
+                enemies[enemy_count].patrol_direction = 0; // 0 = not initialized yet
+                enemies[enemy_count].patrol_step = 1;      // Start moving in positive direction
+            }
             game_map[pos] = c;   
             pos++;  
         }
@@ -277,6 +301,60 @@ void move_enemies(void) {
                 if (enemies[i].y > player_y) enemies[i].y -= 1;
                 if (enemies[i].y < player_y) enemies[i].y += 1;
             }
+            
+            // Skeleton patrols horizontally or vertically
+            if (enemies[i].tile == '&' && is_within_range(player_x, player_y, enemies[i].x, enemies[i].y, 8)) {
+                // Check if player is adjacent to the skeleton in any direction
+                int dx = (int)player_x - (int)enemies[i].x;
+                int dy = (int)player_y - (int)enemies[i].y;
+                
+                // If player is adjacent in ANY direction (including diagonals)
+                if ((abs(dx) <= 1 && abs(dy) <= 1) && (dx != 0 || dy != 0)) {
+                    // Turn to face the player
+                    if (abs(dx) > abs(dy)) {
+                        // Player is more to the left/right, so face horizontally
+                        enemies[i].patrol_direction = 1; // Horizontal
+                        enemies[i].patrol_step = (dx > 0) ? 1 : -1; // Face toward player
+                    } else {
+                        // Player is more above/below, so face vertically
+                        enemies[i].patrol_direction = 2; // Vertical
+                        enemies[i].patrol_step = (dy > 0) ? 1 : -1; // Face toward player
+                    }
+                    
+                    // Use the proper enemy_attack function instead of direct damage
+                    enemy_attack(i);
+                } else {
+                    // If this is a new skeleton, set its patrol direction (0 = horizontal, 1 = vertical)
+                    if (enemies[i].patrol_direction == 0) {
+                        enemies[i].patrol_direction = (rand() % 2) + 1; // 1 = horizontal, 2 = vertical
+                    }
+                    
+                    // Move horizontally
+                    if (enemies[i].patrol_direction == 1) {
+                        enemies[i].x += enemies[i].patrol_step;
+                        
+                        // Check if we need to reverse direction
+                        c = get_map(enemies[i].x, enemies[i].y);
+                        if (c == '#' || c == '+' || c == '@') {
+                            enemies[i].x -= enemies[i].patrol_step;  // Move back
+                            enemies[i].patrol_step *= -1;  // Reverse direction
+                            enemies[i].x += enemies[i].patrol_step;  // Move in new direction
+                        }
+                    }
+                    // Move vertically
+                    else {
+                        enemies[i].y += enemies[i].patrol_step;
+                        
+                        // Check if we need to reverse direction
+                        c = get_map(enemies[i].x, enemies[i].y);
+                        if (c == '#' || c == '+' || c == '@') {
+                            enemies[i].y -= enemies[i].patrol_step;  // Move back
+                            enemies[i].patrol_step *= -1;  // Reverse direction
+                            enemies[i].y += enemies[i].patrol_step;  // Move in new direction
+                        }
+                    }
+                }
+            }
 
             // Redraw
             c = get_map(enemies[i].x, enemies[i].y);
@@ -414,6 +492,11 @@ void game_loop(void) {
             break;
 
         case 'r': // Rats
+            attack(weapon, player_x, player_y);
+            obstruction = true;
+            break;
+
+        case '&': // Skeleton
             attack(weapon, player_x, player_y);
             obstruction = true;
             break;
