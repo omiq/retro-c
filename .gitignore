@@ -1,5 +1,6 @@
 .vscode/c_cpp_properties.json
 .vscode/settings.json
+*.o
 hello.build/__bytecode.const
 hello.build/__constants.bin
 hello.build/__constants.c
@@ -26,3 +27,6 @@ hello.build/static_src/MainProgram.o
 hello.o
 dungeon.o
 .DS_Store
+dungeon_multi.o
+charset-c64.o
+charset-c64.o
