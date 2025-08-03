@@ -20,16 +20,20 @@ void prompt()
     printf("? ");
     fgets(guess, sizeof(guess), stdin);
 
-    /* Remove trailing newline */
-    //guess[strlen(guess)-1] = '\0';
-
 }
 
 void playWordle(int seed) {
-    const char *words[] = {"apple", "house", "smile", "dream"};
+    const char *words[] = {
+        "apple", "beach", "blink", "candy", "chair", "cloud", "dance", "eagle",
+        "flame", "fruit", "ghost", "grape", "heart", "honey", "image", "jewel",
+        "knife", "lemon", "magic", "music", "ocean", "paint", "peach", "queen",
+        "river", "salad", "shade", "spark", "stone", "sugar", "table", "tiger",
+        "tower", "train", "tulip", "video", "water", "wheat", "zebra", "arrow",
+        "bread", "comet", "dream", "frost", "grass", "house", "light", "petal",
+        "smile", "storm"
+    };
+    int wordCount = 50;
     int i;
-    int wordCount = 4;
-
     int attempts = 6;
 
 
