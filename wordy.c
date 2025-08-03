@@ -86,7 +86,8 @@ int main() {
       clrscr();
       bordercolor(COLOR_BLUE);
       textcolor(COLOR_WHITE);
-      printf("             WORDY GAME");
+      printf("             WORDY GAME\n");
+      printf("             __________");
       textcolor(COLOR_LIGHTBLUE);
       printf("\n\r\n\r  (that in no way infringes on any ip)");
       textcolor(COLOR_WHITE);
@@ -99,8 +100,12 @@ int main() {
 
       textcolor(COLOR_GREEN);
       printf("\n\r\nyour guess is good + correct position");
-
-
+      
+      textcolor(COLOR_LIGHTBLUE);
+      printf("\n\r\n\r");
+      printf("\n\r\n\r");
+      printf("\n\r\n\r(c) Chris Garrett @retrogamecoders 2025");
+      
       while(!kbhit()) {
           counter++;
       }
